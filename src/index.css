@@ -51,7 +51,7 @@
   }
   
   .card-hover {
-    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+    @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
   }
   
   .button-hover {
@@ -85,4 +85,26 @@
     border-radius: 20px;
     border: transparent;
   }
+  
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-accent to-blue-700;
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px 5px rgba(10, 165, 233, 0.2); }
+  50% { box-shadow: 0 0 30px 8px rgba(10, 165, 233, 0.3); }
+}
+
+.animate-glow {
+  animation: pulse-glow 4s ease-in-out infinite;
 }

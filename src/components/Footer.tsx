@@ -1,16 +1,16 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Twitter, Instagram, Linkedin, GitHub } from 'lucide-react';
+import { Facebook, Twitter, Instagram, Linkedin, Github } from 'lucide-react';
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-primary text-primary-foreground overflow-hidden">
+    <footer className="bg-gradient-to-br from-primary to-primary/90 text-primary-foreground overflow-hidden">
       <div className="container mx-auto px-4 py-16">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-10">
           <div className="md:col-span-2">
             <Link to="/" className="inline-block mb-4">
-              <span className="text-2xl font-bold">Eleva</span>
+              <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-accent via-accent/90 to-white">Eleva</span>
             </Link>
             <p className="text-primary-foreground/80 mb-6 max-w-md">
               An AI-powered electronics marketplace that transforms how you buy and sell 
@@ -22,12 +22,12 @@ const Footer: React.FC = () => {
                 { icon: <Twitter size={18} />, label: "Twitter" },
                 { icon: <Instagram size={18} />, label: "Instagram" },
                 { icon: <Linkedin size={18} />, label: "LinkedIn" },
-                { icon: <GitHub size={18} />, label: "GitHub" }
+                { icon: <Github size={18} />, label: "GitHub" }
               ].map((social, idx) => (
                 <a 
                   key={idx}
                   href="#" 
-                  className="p-2 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 transition-colors"
+                  className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
                   aria-label={social.label}
                 >
                   {social.icon}
@@ -51,13 +51,13 @@ const Footer: React.FC = () => {
             }
           ].map((column, idx) => (
             <div key={idx}>
-              <h3 className="font-bold mb-4">{column.title}</h3>
+              <h3 className="font-bold mb-4 text-accent">{column.title}</h3>
               <ul className="space-y-2">
                 {column.links.map((link, linkIdx) => (
                   <li key={linkIdx}>
                     <a 
                       href="#" 
-                      className="text-primary-foreground/80 hover:text-primary-foreground transition-colors"
+                      className="text-primary-foreground/80 hover:text-accent transition-colors"
                     >
                       {link}
                     </a>
@@ -76,10 +76,10 @@ const Footer: React.FC = () => {
           </p>
           
           <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-primary-foreground/60">
-            <a href="#" className="hover:text-primary-foreground transition-colors">Terms of Service</a>
-            <a href="#" className="hover:text-primary-foreground transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-primary-foreground transition-colors">Cookie Policy</a>
-            <a href="#" className="hover:text-primary-foreground transition-colors">Accessibility</a>
+            <a href="#" className="hover:text-accent transition-colors">Terms of Service</a>
+            <a href="#" className="hover:text-accent transition-colors">Privacy Policy</a>
+            <a href="#" className="hover:text-accent transition-colors">Cookie Policy</a>
+            <a href="#" className="hover:text-accent transition-colors">Accessibility</a>
           </div>
         </div>
       </div>

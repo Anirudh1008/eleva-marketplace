@@ -98,6 +98,10 @@ export default {
 				'pulse-light': {
 					'0%, 100%': { opacity: '1' },
 					'50%': { opacity: '0.8' }
+				},
+				'shimmer': {
+					'0%': { backgroundPosition: '-1000px 0' },
+					'100%': { backgroundPosition: '1000px 0' }
 				}
 			},
 			animation: {
@@ -110,7 +114,8 @@ export default {
 				'fade-in-left': 'fade-in-left 0.5s ease-out',
 				'scale-in': 'scale-in 0.3s ease-out',
 				'float': 'float 6s ease-in-out infinite',
-				'pulse-light': 'pulse-light 2s ease-in-out infinite'
+				'pulse-light': 'pulse-light 2s ease-in-out infinite',
+				'shimmer': 'shimmer 2s infinite linear'
 			},
 			backdropBlur: {
 				xs: '2px',
