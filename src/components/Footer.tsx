@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Twitter, Instagram, Linkedin, GitHub } from 'lucide-react';
+import { Facebook, Twitter, Instagram, Linkedin, Github } from 'lucide-react';
 
 const Footer: React.FC = () => {
   return (
@@ -22,7 +21,7 @@ const Footer: React.FC = () => {
                 { icon: <Twitter size={18} />, label: "Twitter" },
                 { icon: <Instagram size={18} />, label: "Instagram" },
                 { icon: <Linkedin size={18} />, label: "LinkedIn" },
-                { icon: <GitHub size={18} />, label: "GitHub" }
+                { icon: <Github size={18} />, label: "GitHub" }
               ].map((social, idx) => (
                 <a 
                   key={idx}
