@@ -1,7 +1,9 @@
 
 import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Heart, Star, ShieldCheck, Zap } from 'lucide-react';
+import { Heart, Star, ShieldCheck, Zap, IndianRupee } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 export interface Product {
   id: string;
@@ -22,6 +24,11 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+  const navigate = useNavigate();
+  
+  // Convert USD to INR (83 is the approximate conversion rate)
+  const priceInRupees = Math.round(product.price * 83);
+  const originalPriceInRupees = product.originalPrice ? Math.round(product.originalPrice * 83) : undefined;
   
   const getConditionColor = (condition: string) => {
     switch(condition) {
@@ -37,6 +44,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     if (!product.originalPrice) return null;
     const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
     return discount > 0 ? discount : null;
+  };
+  
+  const handleViewDetails = () => {
+    navigate('/payment', { state: { product } });
   };
   
   const discount = getDiscountPercentage();
@@ -90,11 +101,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </div>
         
         <div className="flex items-center justify-between mb-3">
-          <div>
-            <span className="font-bold text-lg">${product.price.toLocaleString()}</span>
-            {product.originalPrice && (
+          <div className="flex items-center">
+            <IndianRupee size={16} className="mr-1" />
+            <span className="font-bold text-lg">{priceInRupees.toLocaleString()}</span>
+            {originalPriceInRupees && (
               <span className="text-sm text-muted-foreground line-through ml-2">
-                ${product.originalPrice.toLocaleString()}
+                ₹{originalPriceInRupees.toLocaleString()}
               </span>
             )}
           </div>
@@ -104,15 +116,20 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </Badge>
         </div>
         
-        <div className="flex items-center space-x-1">
+        <div className="flex items-center justify-between">
           <div className="flex bg-yellow-100 px-2 py-1 rounded-full items-center">
             <Star size={14} className="fill-yellow-500 text-yellow-500" />
             <span className="text-sm font-medium text-yellow-700 ml-1">{product.rating.toFixed(1)}</span>
           </div>
           
-          <span className="text-xs text-muted-foreground ml-auto px-2 py-1 bg-gray-100 rounded-full">
-            {product.category}
-          </span>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-xs bg-accent/10 hover:bg-accent/20 text-accent font-medium rounded-full"
+            onClick={handleViewDetails}
+          >
+            Buy Now
+          </Button>
         </div>
       </div>
       
@@ -121,9 +138,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         flex items-end justify-center pb-8 opacity-0 group-hover:opacity-100
         transition-opacity duration-300
       `}>
-        <button className="bg-white text-black font-medium py-2.5 px-6 rounded-full transform -translate-y-4 group-hover:translate-y-0 transition-transform duration-300 hover:bg-accent hover:text-white shadow-lg">
-          View Details
-        </button>
+        <Button 
+          onClick={handleViewDetails}
+          className="transform -translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-lg"
+        >
+          Buy Now
+        </Button>
       </div>
     </div>
   );

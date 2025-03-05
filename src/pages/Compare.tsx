@@ -1,8 +1,9 @@
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { ArrowLeftRight, Check, X, Info, Zap, ArrowRight } from 'lucide-react';
+import { ArrowLeftRight, Check, X, Info, Zap, ArrowRight, IndianRupee } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface CompareItem {
@@ -55,6 +56,11 @@ const sampleDevices: CompareItem[] = [
 
 const Compare: React.FC = () => {
   const [compareItems, setCompareItems] = useState<CompareItem[]>(sampleDevices);
+  const navigate = useNavigate();
+  
+  const handleBuyNow = (product: CompareItem) => {
+    navigate('/payment', { state: { product } });
+  };
   
   return (
     <div className="min-h-screen flex flex-col">
@@ -112,17 +118,18 @@ const Compare: React.FC = () => {
                     
                     <div className="mb-4">
                       <div className="flex items-end">
-                        <span className="text-2xl font-bold">${item.price}</span>
+                        <IndianRupee size={18} className="mr-1" />
+                        <span className="text-2xl font-bold">{Math.round(item.price * 83).toLocaleString()}</span>
                         {item.price < item.originalPrice && (
                           <span className="text-sm line-through text-muted-foreground ml-2">
-                            ${item.originalPrice}
+                            ₹{Math.round(item.originalPrice * 83).toLocaleString()}
                           </span>
                         )}
                       </div>
                       
                       {item.price < item.originalPrice && (
                         <div className="text-sm text-green-600 font-medium">
-                          Save ${item.originalPrice - item.price}
+                          Save ₹{Math.round((item.originalPrice - item.price) * 83).toLocaleString()}
                         </div>
                       )}
                     </div>
@@ -141,7 +148,7 @@ const Compare: React.FC = () => {
                   </div>
                   
                   <div className="p-4 border-t border-gray-100">
-                    <Button variant="outline" className="w-full">View Details</Button>
+                    <Button className="w-full" onClick={() => handleBuyNow(item)}>Buy Now</Button>
                   </div>
                 </div>
               ))}
@@ -156,7 +163,7 @@ const Compare: React.FC = () => {
                   <h4 className="font-medium mb-1">AI Recommendation</h4>
                   <p className="text-sm text-muted-foreground">
                     The iPhone 13 Pro offers better value for money with similar performance to iPhone 14 Pro. 
-                    You save $300 with only minor differences in camera and processor.
+                    You save ₹{Math.round((999 - 699) * 83).toLocaleString()} with only minor differences in camera and processor.
                   </p>
                 </div>
               </div>

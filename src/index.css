@@ -130,3 +130,45 @@
   animation: fade-in 0.5s ease-out 0.4s forwards;
   opacity: 0; /* Start with opacity 0 */
 }
+
+/* Add new animations for hover effects */
+@keyframes scale-up {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.05); }
+}
+
+.hover-scale {
+  transition: transform 0.3s ease;
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+/* Improve glass effect */
+.glass {
+  @apply bg-white/80 backdrop-blur-md border border-white/60 shadow-lg;
+}
+
+.glass-dark {
+  @apply bg-black/20 backdrop-blur-md border border-white/30 shadow-lg;
+}
+
+/* Add shadow effects */
+.hover-shadow {
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.hover-shadow:hover {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  transform: translateY(-2px);
+}
+
+/* Add text styling utilities */
+.text-shadow-sm {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.text-shadow-md {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}

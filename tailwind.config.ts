@@ -110,6 +110,18 @@ export default {
 				'bounce-subtle': {
 					'0%, 100%': { transform: 'translateY(0)' },
 					'50%': { transform: 'translateY(-5px)' }
+				},
+				'pulse': {
+					'0%, 100%': { opacity: '1' },
+					'50%': { opacity: '0.5' }
+				},
+				'spin-slow': {
+					'0%': { transform: 'rotate(0deg)' },
+					'100%': { transform: 'rotate(360deg)' }
+				},
+				'scale-up': {
+					'0%': { transform: 'scale(1)' },
+					'100%': { transform: 'scale(1.05)' }
 				}
 			},
 			animation: {
@@ -125,14 +137,19 @@ export default {
 				'pulse-light': 'pulse-light 2s ease-in-out infinite',
 				'shimmer': 'shimmer 2s infinite linear',
 				'glow': 'glow 2s infinite ease-in-out',
-				'bounce-subtle': 'bounce-subtle 2s infinite ease-in-out'
+				'bounce-subtle': 'bounce-subtle 2s infinite ease-in-out',
+				'pulse': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+				'spin-slow': 'spin-slow 8s linear infinite',
+				'scale-up': 'scale-up 0.3s ease-out forwards',
 			},
 			backdropBlur: {
 				xs: '2px',
 			},
 			boxShadow: {
 				'glow-accent': '0 0 15px 5px rgba(10, 165, 233, 0.25)',
-				'glow-accent-lg': '0 0 25px 8px rgba(10, 165, 233, 0.3)'
+				'glow-accent-lg': '0 0 25px 8px rgba(10, 165, 233, 0.3)',
+				'card-hover': '0 12px 28px rgba(0, 0, 0, 0.12), 0 5px 10px rgba(0, 0, 0, 0.08)',
+				'button-hover': '0 6px 12px rgba(10, 165, 233, 0.2)'
 			}
 		}
 	},

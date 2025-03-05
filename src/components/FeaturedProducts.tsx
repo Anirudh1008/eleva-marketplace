@@ -1,6 +1,8 @@
 
 import React from 'react';
 import ProductCard, { Product } from './ProductCard';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 const featuredProducts: Product[] = [
   {
@@ -94,23 +96,33 @@ const featuredProducts: Product[] = [
 ];
 
 const FeaturedProducts: React.FC = () => {
+  const navigate = useNavigate();
+  
+  const handleViewAll = () => {
+    navigate('/compare');
+  };
+  
   return (
-    <section className="section-container">
+    <section className="section-container bg-gradient-to-br from-accent/5 to-transparent rounded-3xl py-16">
       <div className="flex justify-between items-center mb-10">
         <div>
           <h2 className="text-2xl md:text-3xl font-bold mb-2">Featured Products</h2>
           <p className="text-muted-foreground">Discover our top-rated and verified electronics</p>
         </div>
-        <button className="hidden md:block link-underline text-accent font-medium">
+        <Button 
+          onClick={handleViewAll}
+          variant="outline" 
+          className="hidden md:flex bg-white hover:bg-accent hover:text-white border-accent/20"
+        >
           View All Products
-        </button>
+        </Button>
       </div>
       
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {featuredProducts.map((product, index) => (
           <div 
             key={product.id} 
-            className="opacity-0 animate-fade-in"
+            className="animate-fade-in"
             style={{ animationDelay: `${index * 100}ms` }}
           >
             <ProductCard product={product} />
@@ -119,9 +131,13 @@ const FeaturedProducts: React.FC = () => {
       </div>
       
       <div className="mt-10 text-center md:hidden">
-        <button className="link-underline text-accent font-medium">
+        <Button 
+          onClick={handleViewAll}
+          variant="outline" 
+          className="bg-white hover:bg-accent hover:text-white border-accent/20"
+        >
           View All Products
-        </button>
+        </Button>
       </div>
     </section>
   );
