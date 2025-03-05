@@ -12,10 +12,10 @@ const SearchBar: React.FC = () => {
 
   return (
     <div 
-      className={`relative flex items-center w-full transition-all duration-300 rounded-full shadow-sm ${
+      className={`relative flex items-center w-full transition-all duration-300 rounded-full ${
         isFocused 
-          ? 'bg-white shadow-md border border-accent/30 shadow-accent/20' 
-          : 'bg-secondary/80 border border-transparent'
+          ? 'bg-white shadow-lg ring-2 ring-accent/20 border border-accent/30' 
+          : 'bg-secondary/80 border border-transparent shadow'
       }`}
     >
       <div className="pl-4">
@@ -44,12 +44,18 @@ const SearchBar: React.FC = () => {
         </button>
       )}
       {!query && isFocused && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-2xl shadow-xl border border-gray-100 p-2 z-50">
-          <div className="px-3 py-2 text-xs text-muted-foreground mb-1">Popular Searches</div>
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 p-3 z-50 animate-fade-in">
+          <div className="px-3 py-2 text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wider">Popular Searches</div>
           {['iPhone 13 Pro', 'Samsung Galaxy S22', 'MacBook Air M1', 'Sony WH-1000XM4'].map((suggestion, index) => (
-            <div key={index} className="flex items-center px-3 py-2 hover:bg-accent/5 rounded-lg cursor-pointer">
-              <Zap size={14} className="text-accent mr-2" />
-              <span>{suggestion}</span>
+            <div 
+              key={index} 
+              className="flex items-center px-3 py-2.5 hover:bg-accent/5 rounded-lg cursor-pointer transition-colors"
+              style={{ animationDelay: `${index * 50}ms` }}
+            >
+              <div className="p-1.5 bg-accent/10 rounded-full mr-3">
+                <Zap size={14} className="text-accent" />
+              </div>
+              <span className="font-medium">{suggestion}</span>
             </div>
           ))}
         </div>

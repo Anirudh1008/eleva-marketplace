@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Search, User, ShoppingCart, Menu, X, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import SearchBar from './SearchBar';
@@ -8,6 +8,7 @@ import SearchBar from './SearchBar';
 const Header: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -18,6 +19,13 @@ const Header: React.FC = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
+
+  const isActive = (path: string) => location.pathname === path;
 
   return (
     <header 
@@ -40,12 +48,20 @@ const Header: React.FC = () => {
         </div>
 
         <div className="hidden md:flex items-center space-x-4">
-          <Button variant="ghost" size="sm" className="button-hover hover:bg-accent/10 hover:text-accent">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className={`button-hover ${isActive('/sell') ? 'bg-accent/10 text-accent' : 'hover:bg-accent/10 hover:text-accent'}`}
+          >
             <Link to="/sell" className="flex items-center space-x-1">
               <span>Sell</span>
             </Link>
           </Button>
-          <Button variant="ghost" size="sm" className="button-hover hover:bg-accent/10 hover:text-accent">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className={`button-hover ${isActive('/compare') ? 'bg-accent/10 text-accent' : 'hover:bg-accent/10 hover:text-accent'}`}
+          >
             <Link to="/compare" className="flex items-center space-x-1">
               <span>Compare</span>
             </Link>
@@ -76,10 +92,20 @@ const Header: React.FC = () => {
             <SearchBar />
           </div>
           <div className="flex flex-col space-y-3">
-            <Link to="/sell" className="px-3 py-2 hover:bg-accent/10 rounded-md hover:text-accent transition-colors">
+            <Link 
+              to="/sell" 
+              className={`px-3 py-2 rounded-md transition-colors ${
+                isActive('/sell') ? 'bg-accent/10 text-accent' : 'hover:bg-accent/10 hover:text-accent'
+              }`}
+            >
               Sell
             </Link>
-            <Link to="/compare" className="px-3 py-2 hover:bg-accent/10 rounded-md hover:text-accent transition-colors">
+            <Link 
+              to="/compare" 
+              className={`px-3 py-2 rounded-md transition-colors ${
+                isActive('/compare') ? 'bg-accent/10 text-accent' : 'hover:bg-accent/10 hover:text-accent'
+              }`}
+            >
               Compare
             </Link>
             <Link to="/account" className="px-3 py-2 hover:bg-accent/10 rounded-md hover:text-accent transition-colors">

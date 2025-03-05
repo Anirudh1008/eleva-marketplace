@@ -91,6 +91,7 @@
   }
 }
 
+/* Fix animations that were causing content to disappear */
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-15px); }
@@ -107,4 +108,25 @@
 
 .animate-glow {
   animation: pulse-glow 4s ease-in-out infinite;
+}
+
+/* Make animations permanent by using forwards */
+@keyframes fade-in {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out forwards;
+  opacity: 0; /* Start with opacity 0 */
+}
+
+.animate-fade-in-delayed {
+  animation: fade-in 0.5s ease-out 0.2s forwards;
+  opacity: 0; /* Start with opacity 0 */
+}
+
+.animate-fade-in-delayed-lg {
+  animation: fade-in 0.5s ease-out 0.4s forwards;
+  opacity: 0; /* Start with opacity 0 */
 }
