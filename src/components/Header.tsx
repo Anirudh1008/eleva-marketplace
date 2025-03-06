@@ -1,14 +1,17 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, User, ShoppingCart, Menu, X, Zap } from 'lucide-react';
+import { Search, User, ShoppingCart, Menu, X, Cpu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import SearchBar from './SearchBar';
+import { useToast } from "@/components/ui/toast";
 
 const Header: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const location = useLocation();
+  const { toast } = useToast();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -17,6 +20,13 @@ const Header: React.FC = () => {
     };
     
     window.addEventListener('scroll', handleScroll);
+    
+    // Check if user is logged in
+    const userInfo = localStorage.getItem('userInfo');
+    if (userInfo) {
+      setIsLoggedIn(true);
+    }
+    
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -26,6 +36,26 @@ const Header: React.FC = () => {
   }, [location.pathname]);
 
   const isActive = (path: string) => location.pathname === path;
+  
+  const handleUserClick = () => {
+    if (isLoggedIn) {
+      // Navigate to profile
+      window.location.href = '/profile';
+    } else {
+      // Show login modal
+      toast({
+        title: "Authentication Required",
+        description: "Please login or signup to continue",
+        action: (
+          <Link to="/login">
+            <Button variant="outline" size="sm">
+              Login
+            </Button>
+          </Link>
+        ),
+      });
+    }
+  };
 
   return (
     <header 
@@ -36,10 +66,10 @@ const Header: React.FC = () => {
       <div className="container mx-auto px-4 flex items-center justify-between">
         <Link to="/" className="flex items-center space-x-2">
           <div className="p-1.5 bg-accent/10 rounded-lg mr-1">
-            <Zap size={20} className="text-accent" />
+            <Cpu size={20} className="text-accent" />
           </div>
           <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-accent to-blue-700">
-            Eleva
+            AITronics
           </span>
         </Link>
 
@@ -66,7 +96,12 @@ const Header: React.FC = () => {
               <span>Compare</span>
             </Link>
           </Button>
-          <Button variant="ghost" size="icon" className="button-hover rounded-full hover:bg-accent/10 hover:text-accent">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="button-hover rounded-full hover:bg-accent/10 hover:text-accent"
+            onClick={handleUserClick}
+          >
             <User size={20} />
           </Button>
           <Button variant="ghost" size="icon" className="button-hover rounded-full hover:bg-accent/10 hover:text-accent relative">
@@ -108,8 +143,11 @@ const Header: React.FC = () => {
             >
               Compare
             </Link>
-            <Link to="/account" className="px-3 py-2 hover:bg-accent/10 rounded-md hover:text-accent transition-colors">
-              Account
+            <Link 
+              to={isLoggedIn ? "/profile" : "/login"} 
+              className="px-3 py-2 hover:bg-accent/10 rounded-md hover:text-accent transition-colors"
+            >
+              {isLoggedIn ? "My Profile" : "Login/Signup"}
             </Link>
             <Link to="/cart" className="px-3 py-2 hover:bg-accent/10 rounded-md hover:text-accent transition-colors flex justify-between">
               <span>Cart</span>
