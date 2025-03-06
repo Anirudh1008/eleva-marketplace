@@ -4,7 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Search, User, ShoppingCart, Menu, X, Cpu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import SearchBar from './SearchBar';
-import { useToast } from "@/components/ui/toast";
+import { useToast } from "@/hooks/use-toast"; // Fixed import
 
 const Header: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -90,10 +90,10 @@ const Header: React.FC = () => {
           <Button 
             variant="ghost" 
             size="sm" 
-            className={`button-hover ${isActive('/compare') ? 'bg-accent/10 text-accent' : 'hover:bg-accent/10 hover:text-accent'}`}
+            className={`button-hover ${isActive('/shop') ? 'bg-accent/10 text-accent' : 'hover:bg-accent/10 hover:text-accent'}`}
           >
-            <Link to="/compare" className="flex items-center space-x-1">
-              <span>Compare</span>
+            <Link to="/shop" className="flex items-center space-x-1">
+              <span>Shop</span>
             </Link>
           </Button>
           <Button 
@@ -136,12 +136,12 @@ const Header: React.FC = () => {
               Sell
             </Link>
             <Link 
-              to="/compare" 
+              to="/shop" 
               className={`px-3 py-2 rounded-md transition-colors ${
-                isActive('/compare') ? 'bg-accent/10 text-accent' : 'hover:bg-accent/10 hover:text-accent'
+                isActive('/shop') ? 'bg-accent/10 text-accent' : 'hover:bg-accent/10 hover:text-accent'
               }`}
             >
-              Compare
+              Shop
             </Link>
             <Link 
               to={isLoggedIn ? "/profile" : "/login"} 

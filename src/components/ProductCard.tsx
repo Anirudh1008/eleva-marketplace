@@ -47,7 +47,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   };
   
   const handleViewDetails = () => {
-    navigate('/payment', { state: { product } });
+    navigate(`/product/${product.id}`, { state: { product } });
   };
   
   const discount = getDiscountPercentage();
@@ -142,7 +142,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           onClick={handleViewDetails}
           className="transform -translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-lg"
         >
-          Buy Now
+          View Details
         </Button>
       </div>
     </div>

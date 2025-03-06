@@ -1,448 +1,641 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import ProductCard, { Product } from '@/components/ProductCard';
+import ProductCard from '@/components/ProductCard';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Slider } from '@/components/ui/slider';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Search, SlidersHorizontal, X, Cpu } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { 
+  Search, 
+  SlidersHorizontal, 
+  ChevronDown, 
+  X,
+  Smartphone,
+  Laptop,
+  Headphones,
+  Watch,
+  Tablet,
+  Camera,
+  Tv,
+  Speaker,
+  Gamepad,
+  Zap
+} from 'lucide-react';
 
-// Sample products data
-const allProducts: Product[] = [
+const categories = [
+  { id: 'all', name: 'All Products', icon: Zap },
+  { id: 'smartphones', name: 'Smartphones', icon: Smartphone },
+  { id: 'laptops', name: 'Laptops', icon: Laptop },
+  { id: 'audio', name: 'Audio', icon: Headphones },
+  { id: 'wearables', name: 'Wearables', icon: Watch },
+  { id: 'tablets', name: 'Tablets', icon: Tablet },
+  { id: 'cameras', name: 'Cameras', icon: Camera },
+  { id: 'tvs', name: 'TVs', icon: Tv },
+  { id: 'speakers', name: 'Speakers', icon: Speaker },
+  { id: 'gaming', name: 'Gaming', icon: Gamepad },
+];
+
+const conditions = [
+  { id: 'new', label: 'New' },
+  { id: 'like-new', label: 'Like New' },
+  { id: 'good', label: 'Good' },
+  { id: 'fair', label: 'Fair' }
+];
+
+const priceRanges = [
+  { id: 'all', label: 'All Prices' },
+  { id: 'under5000', label: 'Under ₹5,000' },
+  { id: '5000-15000', label: '₹5,000 - ₹15,000' },
+  { id: '15000-30000', label: '₹15,000 - ₹30,000' },
+  { id: '30000-60000', label: '₹30,000 - ₹60,000' },
+  { id: 'over60000', label: 'Over ₹60,000' }
+];
+
+// Example products data
+const allProducts = [
   {
     id: '1',
     title: 'iPhone 13 Pro - Graphite',
-    price: 58117, // ₹58,117 (Converted from $699)
-    originalPrice: 82917, // ₹82,917 (Converted from $999)
+    price: 699,
+    originalPrice: 999,
     condition: 'like-new',
     rating: 4.8,
     image: 'https://images.unsplash.com/photo-1632661674596-df8be070a5c5?q=80&w=1528&auto=format&fit=crop',
     isVerified: true,
-    category: 'Smartphones'
+    category: 'smartphones'
   },
   {
     id: '2',
     title: 'MacBook Air M1 - Space Gray',
-    price: 70467, // ₹70,467 (Converted from $849)
-    originalPrice: 82917, // ₹82,917 (Converted from $999)
+    price: 849,
+    originalPrice: 999,
     condition: 'good',
     rating: 4.7,
     image: 'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?q=80&w=1470&auto=format&fit=crop',
     isVerified: true,
-    category: 'Laptops'
+    category: 'laptops'
   },
   {
     id: '3',
     title: 'Sony WH-1000XM4 Headphones',
-    price: 20667, // ₹20,667 (Converted from $249)
-    originalPrice: 28967, // ₹28,967 (Converted from $349)
+    price: 249,
+    originalPrice: 349,
     condition: 'fair',
     rating: 4.5,
     image: 'https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?q=80&w=1388&auto=format&fit=crop',
     isVerified: true,
-    category: 'Audio'
+    category: 'audio'
   },
   {
     id: '4',
     title: 'DJI Mini 3 Pro Drone',
-    price: 49717, // ₹49,717 (Converted from $599)
-    originalPrice: 62997, // ₹62,997 (Converted from $759)
+    price: 599,
+    originalPrice: 759,
     condition: 'good',
     rating: 4.6,
     image: 'https://images.unsplash.com/photo-1473968512647-3e447244af8f?q=80&w=1470&auto=format&fit=crop',
     isVerified: true,
-    category: 'Drones'
+    category: 'cameras'
   },
   {
     id: '5',
     title: 'iPad Pro 12.9" M1 Chip',
-    price: 74617, // ₹74,617 (Converted from $899)
-    originalPrice: 91217, // ₹91,217 (Converted from $1099)
+    price: 899,
+    originalPrice: 1099,
     condition: 'like-new',
     rating: 4.9,
     image: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?q=80&w=1374&auto=format&fit=crop',
     isVerified: true,
-    category: 'Tablets'
+    category: 'tablets'
   },
   {
     id: '6',
     title: 'Samsung Galaxy S22 Ultra',
-    price: 66317, // ₹66,317 (Converted from $799)
-    originalPrice: 99517, // ₹99,517 (Converted from $1199)
+    price: 799,
+    originalPrice: 1199,
     condition: 'good',
     rating: 4.7,
     image: 'https://images.unsplash.com/photo-1659776680419-9d59ae0db230?q=80&w=1374&auto=format&fit=crop',
     isVerified: true,
-    category: 'Smartphones'
+    category: 'smartphones'
   },
   {
     id: '7',
     title: 'Apple Watch Series 7',
-    price: 24817, // ₹24,817 (Converted from $299)
-    originalPrice: 33117, // ₹33,117 (Converted from $399)
+    price: 299,
+    originalPrice: 399,
     condition: 'like-new',
     rating: 4.6,
     image: 'https://images.unsplash.com/photo-1551816230-ef5deaed4a26?q=80&w=1444&auto=format&fit=crop',
     isVerified: true,
-    category: 'Wearables'
+    category: 'wearables'
   },
   {
     id: '8',
     title: 'Nintendo Switch OLED',
-    price: 24817, // ₹24,817 (Converted from $299)
-    originalPrice: 28967, // ₹28,967 (Converted from $349)
+    price: 299,
+    originalPrice: 349,
     condition: 'new',
     rating: 4.9,
     image: 'https://images.unsplash.com/photo-1662997297569-a814ff20e480?q=80&w=1465&auto=format&fit=crop',
     isVerified: false,
-    category: 'Gaming'
+    category: 'gaming'
   },
   {
     id: '9',
-    title: 'Bose QuietComfort 45 Headphones',
-    price: 24817, // ₹24,817 (Converted from $299)
-    originalPrice: 31867, // ₹31,867 (Converted from $379)
+    title: 'Sony PlayStation 5',
+    price: 450,
+    originalPrice: 499,
     condition: 'good',
-    rating: 4.7,
-    image: 'https://images.unsplash.com/photo-1629367494173-c78a56567877?q=80&w=1974&auto=format&fit=crop',
+    rating: 4.8,
+    image: 'https://images.unsplash.com/photo-1606813907291-d86efa9b94db?q=80&w=1470&auto=format&fit=crop',
     isVerified: true,
-    category: 'Audio'
+    category: 'gaming'
   },
   {
     id: '10',
-    title: 'Canon EOS R5 Camera',
-    price: 290867, // ₹290,867 (Converted from $3499)
-    originalPrice: 332417, // ₹332,417 (Converted from $3999)
-    condition: 'excellent',
-    rating: 4.8,
-    image: 'https://images.unsplash.com/photo-1516724562728-afc824a36e84?q=80&w=1471&auto=format&fit=crop',
+    title: 'Samsung 55" QLED 4K TV',
+    price: 699,
+    originalPrice: 899,
+    condition: 'new',
+    rating: 4.7,
+    image: 'https://images.unsplash.com/photo-1593305841991-05c297ba4575?q=80&w=1474&auto=format&fit=crop',
     isVerified: true,
-    category: 'Cameras'
+    category: 'tvs'
   },
   {
     id: '11',
-    title: 'Microsoft Surface Laptop 4',
-    price: 83067, // ₹83,067 (Converted from $999)
-    originalPrice: 108367, // ₹108,367 (Converted from $1299)
-    condition: 'good',
-    rating: 4.5,
-    image: 'https://images.unsplash.com/photo-1625295114771-8b43e5ccaa92?q=80&w=1470&auto=format&fit=crop',
+    title: 'Canon EOS R5 Mirrorless Camera',
+    price: 3299,
+    originalPrice: 3899,
+    condition: 'new',
+    rating: 4.9,
+    image: 'https://images.unsplash.com/photo-1502982720700-bfff97f2ecac?q=80&w=1470&auto=format&fit=crop',
     isVerified: true,
-    category: 'Laptops'
+    category: 'cameras'
   },
   {
     id: '12',
-    title: 'Google Pixel 6 Pro - Stormy Black',
-    price: 49917, // ₹49,917 (Converted from $599)
-    originalPrice: 74767, // ₹74,767 (Converted from $899)
-    condition: 'fair',
-    rating: 4.4,
-    image: 'https://images.unsplash.com/photo-1635870880642-5912c3367c6d?q=80&w=1364&auto=format&fit=crop',
-    isVerified: true,
-    category: 'Smartphones'
+    title: 'Bose SoundLink Revolve+ Speaker',
+    price: 199,
+    originalPrice: 299,
+    condition: 'good',
+    rating: 4.5,
+    image: 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?q=80&w=1636&auto=format&fit=crop',
+    isVerified: false,
+    category: 'speakers'
   }
-];
-
-// Categories for filtering
-const categories = [
-  "All Categories",
-  "Smartphones",
-  "Laptops",
-  "Tablets",
-  "Audio",
-  "Cameras",
-  "Gaming",
-  "Wearables",
-  "Drones",
-  "Accessories"
-];
-
-// Conditions for filtering
-const conditions = [
-  { value: "new", label: "New" },
-  { value: "like-new", label: "Like New" },
-  { value: "excellent", label: "Excellent" },
-  { value: "good", label: "Good" },
-  { value: "fair", label: "Fair" }
 ];
 
 const Shop = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All Categories');
-  const [priceRange, setPriceRange] = useState([0, 350000]); // ₹0 to ₹350,000
-  const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
-  const [onlyVerified, setOnlyVerified] = useState(false);
-  const [filterMenuOpen, setFilterMenuOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedConditions, setSelectedConditions] = useState([]);
+  const [selectedPriceRange, setSelectedPriceRange] = useState('all');
+  const [showFilters, setShowFilters] = useState(false);
+  const [products, setProducts] = useState(allProducts);
+  const [sortBy, setSortBy] = useState('relevance');
   
-  // Filter products based on all criteria
-  const filteredProducts = allProducts.filter(product => {
-    // Search query filter
-    const matchesSearch = product.title.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    // Category filter
-    const matchesCategory = selectedCategory === 'All Categories' || product.category === selectedCategory;
-    
-    // Price range filter
-    const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1];
-    
-    // Condition filter
-    const matchesCondition = selectedConditions.length === 0 || selectedConditions.includes(product.condition);
-    
-    // Verification filter
-    const matchesVerification = !onlyVerified || product.isVerified;
-    
-    return matchesSearch && matchesCategory && matchesPrice && matchesCondition && matchesVerification;
-  });
+  useEffect(() => {
+    filterProducts();
+  }, [searchQuery, selectedCategory, selectedConditions, selectedPriceRange, sortBy]);
   
-  const toggleFilterMenu = () => {
-    setFilterMenuOpen(!filterMenuOpen);
+  const filterProducts = () => {
+    let filtered = [...allProducts];
+    
+    // Filter by search query
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(product => 
+        product.title.toLowerCase().includes(query) || 
+        product.category.toLowerCase().includes(query)
+      );
+    }
+    
+    // Filter by category
+    if (selectedCategory !== 'all') {
+      filtered = filtered.filter(product => product.category === selectedCategory);
+    }
+    
+    // Filter by condition
+    if (selectedConditions.length > 0) {
+      filtered = filtered.filter(product => selectedConditions.includes(product.condition));
+    }
+    
+    // Filter by price range
+    if (selectedPriceRange !== 'all') {
+      const priceInRupees = (price) => Math.round(price * 83);
+      
+      switch (selectedPriceRange) {
+        case 'under5000':
+          filtered = filtered.filter(product => priceInRupees(product.price) < 5000);
+          break;
+        case '5000-15000':
+          filtered = filtered.filter(product => {
+            const price = priceInRupees(product.price);
+            return price >= 5000 && price <= 15000;
+          });
+          break;
+        case '15000-30000':
+          filtered = filtered.filter(product => {
+            const price = priceInRupees(product.price);
+            return price > 15000 && price <= 30000;
+          });
+          break;
+        case '30000-60000':
+          filtered = filtered.filter(product => {
+            const price = priceInRupees(product.price);
+            return price > 30000 && price <= 60000;
+          });
+          break;
+        case 'over60000':
+          filtered = filtered.filter(product => priceInRupees(product.price) > 60000);
+          break;
+        default:
+          break;
+      }
+    }
+    
+    // Sort products
+    switch (sortBy) {
+      case 'price-low':
+        filtered.sort((a, b) => a.price - b.price);
+        break;
+      case 'price-high':
+        filtered.sort((a, b) => b.price - a.price);
+        break;
+      case 'rating':
+        filtered.sort((a, b) => b.rating - a.rating);
+        break;
+      case 'newest':
+        // In a real app, you'd sort by date
+        filtered.sort((a, b) => b.id - a.id);
+        break;
+      case 'discount':
+        filtered.sort((a, b) => {
+          const discountA = a.originalPrice ? (a.originalPrice - a.price) / a.originalPrice : 0;
+          const discountB = b.originalPrice ? (b.originalPrice - b.price) / b.originalPrice : 0;
+          return discountB - discountA;
+        });
+        break;
+      default:
+        // Relevance - could be more complex in a real app
+        break;
+    }
+    
+    setProducts(filtered);
   };
   
-  const resetFilters = () => {
+  const handleConditionToggle = (condition) => {
+    if (selectedConditions.includes(condition)) {
+      setSelectedConditions(selectedConditions.filter(c => c !== condition));
+    } else {
+      setSelectedConditions([...selectedConditions, condition]);
+    }
+  };
+  
+  const clearFilters = () => {
     setSearchQuery('');
-    setSelectedCategory('All Categories');
-    setPriceRange([0, 350000]);
+    setSelectedCategory('all');
     setSelectedConditions([]);
-    setOnlyVerified(false);
-  };
-  
-  const toggleCondition = (condition: string) => {
-    setSelectedConditions(prevConditions => 
-      prevConditions.includes(condition) 
-        ? prevConditions.filter(c => c !== condition)
-        : [...prevConditions, condition]
-    );
+    setSelectedPriceRange('all');
+    setSortBy('relevance');
   };
   
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       
-      <main className="flex-grow pt-32 pb-20">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold">Shop All Products</h1>
-            
-            <div className="hidden md:flex items-center space-x-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search products..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 w-[300px]"
-                />
-              </div>
-              <Button 
-                variant="outline" 
-                size="icon" 
-                onClick={toggleFilterMenu}
-                className={filterMenuOpen ? 'bg-accent text-white' : ''}
-              >
-                <SlidersHorizontal size={18} />
-              </Button>
-            </div>
-            
+      <main className="flex-grow pt-24">
+        <div className="container mx-auto px-4 py-8">
+          {/* Page Title and Filters Toggle */}
+          <div className="flex flex-wrap justify-between items-center mb-8">
+            <h1 className="text-2xl md:text-3xl font-bold">Shop Electronics</h1>
             <Button 
               variant="outline" 
+              onClick={() => setShowFilters(!showFilters)}
               className="md:hidden"
-              onClick={toggleFilterMenu}
             >
               <SlidersHorizontal size={18} className="mr-2" />
               Filters
             </Button>
           </div>
           
-          <div className="block md:hidden mb-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
+          {/* Search and Sort */}
+          <div className="mb-6 flex flex-col md:flex-row gap-4">
+            <div className="relative flex-grow">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
+              <input
+                type="text"
                 placeholder="Search products..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
+                className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-secondary/50 border focus:outline-none focus:ring-2 focus:ring-accent/20"
               />
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <span className="text-sm text-muted-foreground whitespace-nowrap">Sort by:</span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="bg-secondary/50 rounded-lg border px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-accent/20"
+              >
+                <option value="relevance">Relevance</option>
+                <option value="price-low">Price: Low to High</option>
+                <option value="price-high">Price: High to Low</option>
+                <option value="rating">Highest Rated</option>
+                <option value="newest">Newest First</option>
+                <option value="discount">Biggest Discount</option>
+              </select>
+            </div>
+          </div>
+          
+          {/* Categories Horizontal Scroll */}
+          <div className="mb-8 overflow-x-auto hide-scrollbar">
+            <div className="flex space-x-3 pb-2">
+              {categories.map((category) => {
+                const Icon = category.icon;
+                return (
+                  <button
+                    key={category.id}
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={`flex items-center space-x-2 whitespace-nowrap px-4 py-2.5 rounded-full transition-all ${
+                      selectedCategory === category.id
+                        ? 'bg-accent text-white shadow-md'
+                        : 'bg-secondary/50 hover:bg-secondary'
+                    }`}
+                  >
+                    <Icon size={16} />
+                    <span>{category.name}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
           
           <div className="flex flex-col md:flex-row gap-6">
-            {/* Filters sidebar - larger screens */}
-            <div className={`md:w-1/4 lg:w-1/5 md:block ${filterMenuOpen ? 'block' : 'hidden'} md:sticky md:top-32 md:self-start`}>
-              <div className="glass p-4 rounded-lg">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-lg font-semibold">Filters</h2>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={resetFilters}
-                    className="text-xs"
+            {/* Filters - Desktop */}
+            <div className="hidden md:block w-full md:w-64 space-y-6">
+              <div className="glass rounded-xl p-5 border border-accent/10">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-semibold">Filters</h3>
+                  <button 
+                    onClick={clearFilters}
+                    className="text-xs text-accent hover:underline"
                   >
-                    Reset All
-                  </Button>
+                    Clear All
+                  </button>
                 </div>
                 
-                {/* Categories */}
-                <div className="mb-6">
-                  <h3 className="font-medium mb-3">Categories</h3>
-                  <div className="space-y-1">
-                    {categories.map(category => (
-                      <Button 
-                        key={category}
-                        variant="ghost"
-                        size="sm"
-                        className={`w-full justify-start text-sm h-auto py-1 ${
-                          selectedCategory === category ? 'bg-accent/10 text-accent' : ''
-                        }`}
-                        onClick={() => setSelectedCategory(category)}
-                      >
-                        {category}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-                
-                {/* Price Range */}
-                <div className="mb-6">
-                  <h3 className="font-medium mb-3">Price Range</h3>
-                  <div className="px-2">
-                    <Slider
-                      value={priceRange}
-                      max={350000}
-                      step={5000}
-                      onValueChange={(value) => setPriceRange(value as [number, number])}
-                      className="mb-4"
-                    />
-                    <div className="flex justify-between text-sm">
-                      <span>₹{priceRange[0].toLocaleString()}</span>
-                      <span>₹{priceRange[1].toLocaleString()}</span>
+                <div className="space-y-5">
+                  <div>
+                    <h4 className="text-sm font-medium mb-3">Condition</h4>
+                    <div className="space-y-2">
+                      {conditions.map((condition) => (
+                        <label key={condition.id} className="flex items-center space-x-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={selectedConditions.includes(condition.id)}
+                            onChange={() => handleConditionToggle(condition.id)}
+                            className="rounded text-accent focus:ring-accent"
+                          />
+                          <span>{condition.label}</span>
+                        </label>
+                      ))}
                     </div>
                   </div>
-                </div>
-                
-                {/* Condition */}
-                <div className="mb-6">
-                  <h3 className="font-medium mb-3">Condition</h3>
-                  <div className="space-y-2">
-                    {conditions.map(condition => (
-                      <div key={condition.value} className="flex items-center space-x-2">
-                        <Checkbox 
-                          id={`condition-${condition.value}`}
-                          checked={selectedConditions.includes(condition.value)}
-                          onCheckedChange={() => toggleCondition(condition.value)}
-                        />
-                        <Label htmlFor={`condition-${condition.value}`} className="text-sm">
-                          {condition.label}
-                        </Label>
-                      </div>
-                    ))}
+                  
+                  <div>
+                    <h4 className="text-sm font-medium mb-3">Price Range</h4>
+                    <div className="space-y-2">
+                      {priceRanges.map((range) => (
+                        <label key={range.id} className="flex items-center space-x-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="price-range"
+                            checked={selectedPriceRange === range.id}
+                            onChange={() => setSelectedPriceRange(range.id)}
+                            className="text-accent focus:ring-accent"
+                          />
+                          <span>{range.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h4 className="text-sm font-medium mb-3">Verification</h4>
+                    <label className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="rounded text-accent focus:ring-accent"
+                      />
+                      <span>AI Verified Only</span>
+                    </label>
                   </div>
                 </div>
-                
-                {/* Verified Only */}
-                <div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="verified"
-                      checked={onlyVerified}
-                      onCheckedChange={() => setOnlyVerified(!onlyVerified)}
-                    />
-                    <Label htmlFor="verified" className="text-sm flex items-center">
-                      <Cpu size={14} className="mr-1 text-accent" />
-                      AI Verified Only
-                    </Label>
-                  </div>
-                </div>
-                
-                <Button 
-                  className="w-full mt-6 md:hidden"
-                  onClick={toggleFilterMenu}
-                >
-                  Apply Filters
-                </Button>
               </div>
             </div>
             
-            {/* Products grid */}
-            <div className="md:w-3/4 lg:w-4/5">
-              <Tabs defaultValue="grid" className="mb-6">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">
-                    {filteredProducts.length} products found
-                  </span>
-                  <TabsList>
-                    <TabsTrigger value="grid">Grid</TabsTrigger>
-                    <TabsTrigger value="list">List</TabsTrigger>
-                  </TabsList>
+            {/* Filters - Mobile */}
+            {showFilters && (
+              <div className="md:hidden fixed inset-0 bg-background z-50 p-4 overflow-y-auto">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-xl font-bold">Filters</h3>
+                  <button 
+                    onClick={() => setShowFilters(false)}
+                    className="p-2 rounded-full hover:bg-secondary"
+                  >
+                    <X size={24} />
+                  </button>
                 </div>
-              </Tabs>
+                
+                <div className="space-y-6">
+                  <div>
+                    <h4 className="text-sm font-medium mb-3">Category</h4>
+                    <div className="grid grid-cols-2 gap-2">
+                      {categories.map((category) => {
+                        const Icon = category.icon;
+                        return (
+                          <button
+                            key={category.id}
+                            onClick={() => {
+                              setSelectedCategory(category.id);
+                              setShowFilters(false);
+                            }}
+                            className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-all ${
+                              selectedCategory === category.id
+                                ? 'bg-accent text-white'
+                                : 'bg-secondary/50'
+                            }`}
+                          >
+                            <Icon size={16} />
+                            <span>{category.name}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h4 className="text-sm font-medium mb-3">Condition</h4>
+                    <div className="space-y-2">
+                      {conditions.map((condition) => (
+                        <label key={condition.id} className="flex items-center space-x-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={selectedConditions.includes(condition.id)}
+                            onChange={() => handleConditionToggle(condition.id)}
+                            className="rounded text-accent focus:ring-accent"
+                          />
+                          <span>{condition.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h4 className="text-sm font-medium mb-3">Price Range</h4>
+                    <div className="space-y-2">
+                      {priceRanges.map((range) => (
+                        <label key={range.id} className="flex items-center space-x-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="price-range"
+                            checked={selectedPriceRange === range.id}
+                            onChange={() => setSelectedPriceRange(range.id)}
+                            className="text-accent focus:ring-accent"
+                          />
+                          <span>{range.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div className="pt-4 flex flex-col space-y-3">
+                    <Button onClick={() => setShowFilters(false)}>
+                      Apply Filters
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => {
+                        clearFilters();
+                        setShowFilters(false);
+                      }}
+                    >
+                      Clear All Filters
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {/* Products Grid */}
+            <div className="flex-1">
+              {/* Active filters */}
+              {(selectedCategory !== 'all' || selectedConditions.length > 0 || selectedPriceRange !== 'all' || searchQuery) && (
+                <div className="mb-4 flex flex-wrap gap-2 items-center">
+                  <span className="text-sm text-muted-foreground">Active Filters:</span>
+                  
+                  {selectedCategory !== 'all' && (
+                    <Badge 
+                      variant="secondary" 
+                      className="flex items-center gap-1"
+                    >
+                      {categories.find(c => c.id === selectedCategory)?.name}
+                      <button 
+                        onClick={() => setSelectedCategory('all')}
+                        className="ml-1 hover:text-accent"
+                      >
+                        <X size={14} />
+                      </button>
+                    </Badge>
+                  )}
+                  
+                  {selectedConditions.map(condition => (
+                    <Badge 
+                      key={condition} 
+                      variant="secondary" 
+                      className="flex items-center gap-1"
+                    >
+                      {conditions.find(c => c.id === condition)?.label}
+                      <button 
+                        onClick={() => handleConditionToggle(condition)}
+                        className="ml-1 hover:text-accent"
+                      >
+                        <X size={14} />
+                      </button>
+                    </Badge>
+                  ))}
+                  
+                  {selectedPriceRange !== 'all' && (
+                    <Badge 
+                      variant="secondary" 
+                      className="flex items-center gap-1"
+                    >
+                      {priceRanges.find(pr => pr.id === selectedPriceRange)?.label}
+                      <button 
+                        onClick={() => setSelectedPriceRange('all')}
+                        className="ml-1 hover:text-accent"
+                      >
+                        <X size={14} />
+                      </button>
+                    </Badge>
+                  )}
+                  
+                  {searchQuery && (
+                    <Badge 
+                      variant="secondary" 
+                      className="flex items-center gap-1"
+                    >
+                      Search: {searchQuery}
+                      <button 
+                        onClick={() => setSearchQuery('')}
+                        className="ml-1 hover:text-accent"
+                      >
+                        <X size={14} />
+                      </button>
+                    </Badge>
+                  )}
+                  
+                  <button 
+                    onClick={clearFilters}
+                    className="text-xs text-accent hover:underline ml-2"
+                  >
+                    Clear All
+                  </button>
+                </div>
+              )}
               
-              <TabsContent value="grid" className="mt-0">
+              {/* Results count */}
+              <div className="mb-4">
+                <p className="text-sm text-muted-foreground">
+                  Showing {products.length} {products.length === 1 ? 'result' : 'results'}
+                </p>
+              </div>
+              
+              {products.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {filteredProducts.map((product, index) => (
+                  {products.map((product, index) => (
                     <div 
-                      key={product.id} 
+                      key={product.id}
                       className="animate-fade-in"
-                      style={{ animationDelay: `${index * 100}ms` }}
+                      style={{ animationDelay: `${index * 50}ms` }}
                     >
                       <ProductCard product={product} />
                     </div>
                   ))}
                 </div>
-              </TabsContent>
-              
-              <TabsContent value="list" className="mt-0">
-                <div className="space-y-4">
-                  {filteredProducts.map((product, index) => (
-                    <div 
-                      key={product.id}
-                      className="animate-fade-in glass p-4 rounded-lg flex gap-4"
-                      style={{ animationDelay: `${index * 100}ms` }}
-                    >
-                      <div className="w-24 h-24 flex-shrink-0">
-                        <img 
-                          src={product.image} 
-                          alt={product.title}
-                          className="w-full h-full object-cover rounded-lg"
-                        />
-                      </div>
-                      <div className="flex-grow">
-                        <h3 className="font-medium mb-1">{product.title}</h3>
-                        <div className="flex items-center space-x-2 mb-1">
-                          <span className="text-lg font-bold">₹{product.price.toLocaleString()}</span>
-                          {product.originalPrice > product.price && (
-                            <span className="text-sm line-through text-muted-foreground">
-                              ₹{product.originalPrice.toLocaleString()}
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex items-center text-xs text-muted-foreground mb-2">
-                          <span className="capitalize mr-2">{product.condition}</span>
-                          {product.isVerified && (
-                            <span className="flex items-center text-accent">
-                              <Cpu size={12} className="mr-1" />
-                              AI Verified
-                            </span>
-                          )}
-                        </div>
-                        <Button size="sm">View Details</Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </TabsContent>
-              
-              {filteredProducts.length === 0 && (
-                <div className="text-center py-16">
-                  <Search className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-medium mb-2">No Products Found</h3>
-                  <p className="text-muted-foreground mb-4">
-                    Try adjusting your search or filter criteria
+              ) : (
+                <div className="glass rounded-xl p-12 text-center">
+                  <h3 className="text-lg font-medium mb-2">No products found</h3>
+                  <p className="text-muted-foreground mb-6">
+                    Try adjusting your search or filter criteria to find what you're looking for.
                   </p>
-                  <Button onClick={resetFilters}>Reset Filters</Button>
+                  <Button onClick={clearFilters}>
+                    Clear All Filters
+                  </Button>
                 </div>
               )}
             </div>
