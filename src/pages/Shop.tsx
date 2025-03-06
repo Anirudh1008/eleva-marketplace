@@ -1,9 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ProductCard from '@/components/ProductCard';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { toast } from '@/components/ui/use-toast';
 import { 
   Search, 
   SlidersHorizontal, 
@@ -273,7 +275,8 @@ const Shop = () => {
         filtered.sort((a, b) => b.rating - a.rating);
         break;
       case 'newest':
-        filtered.sort((a, b) => b.id - a.id);
+        // Fix the type error by ensuring we're comparing numbers
+        filtered.sort((a, b) => parseInt(b.id) - parseInt(a.id));
         break;
       case 'discount':
         filtered.sort((a, b) => {

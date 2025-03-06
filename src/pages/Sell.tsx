@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -239,7 +238,7 @@ const Sell = () => {
         }
       }
       
-      // Calculate suggested price
+      // Calculate suggested price - fixing the type issue by ensuring we're working with numbers
       const basePrice = parseFloat(productData.askingPrice) || 50000;
       let suggestedPrice;
       
