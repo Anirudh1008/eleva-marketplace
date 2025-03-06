@@ -5,11 +5,14 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Eye, EyeOff, User, Lock, Mail, Phone, ArrowRight } from 'lucide-react';
+import { Eye, EyeOff, User, Lock, Mail, Phone, ArrowRight, Camera, MapPin, Bell, CreditCard } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [step, setStep] = useState(1); // For multi-step signup
   const { toast } = useToast();
   const navigate = useNavigate();
   
@@ -17,14 +20,52 @@ const Login = () => {
     email: '',
     password: '',
     name: '',
-    phone: ''
+    phone: '',
+    address: '',
+    profilePicture: null,
+    paymentMethod: 'card',
+    notifications: {
+      email: true,
+      sms: false,
+      whatsapp: false
+    }
   });
   
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    const { name, value, type, checked } = e.target;
+    
+    if (name.startsWith('notifications.')) {
+      const notificationType = name.split('.')[1];
+      setFormData({
+        ...formData,
+        notifications: {
+          ...formData.notifications,
+          [notificationType]: checked
+        }
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: type === 'checkbox' ? checked : value
+      });
+    }
+  };
+  
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setFormData({
+        ...formData,
+        profilePicture: e.target.files[0]
+      });
+    }
+  };
+  
+  const handleNextStep = () => {
+    setStep(step + 1);
+  };
+  
+  const handlePrevStep = () => {
+    setStep(step - 1);
   };
   
   const handleSubmit = (e) => {
@@ -47,20 +88,58 @@ const Login = () => {
       
       navigate('/profile');
     } else {
-      // Normally would create account
+      if (step < 3) {
+        handleNextStep();
+        return;
+      }
+      
+      // Complete signup flow
       localStorage.setItem('userInfo', JSON.stringify({
         name: formData.name,
         email: formData.email,
+        phone: formData.phone,
+        address: formData.address,
+        paymentMethod: formData.paymentMethod,
+        notifications: formData.notifications,
         isLoggedIn: true
       }));
       
       toast({
         title: "Account Created",
-        description: "Please complete your profile"
+        description: "Your account has been successfully created"
       });
       
       navigate('/profile');
     }
+  };
+  
+  const handleSkip = () => {
+    toast({
+      title: "Continuing as Guest",
+      description: "You can sign in later from your profile"
+    });
+    navigate('/');
+  };
+  
+  const renderProgressBar = () => {
+    if (!isLogin) {
+      return (
+        <div className="w-full mb-6">
+          <div className="w-full h-2 bg-secondary rounded-full mb-2">
+            <div 
+              className="h-2 bg-accent rounded-full transition-all" 
+              style={{ width: `${(step / 3) * 100}%` }}
+            ></div>
+          </div>
+          <div className="flex justify-between text-xs text-muted-foreground">
+            <span className={step >= 1 ? 'text-accent' : ''}>Basic Info</span>
+            <span className={step >= 2 ? 'text-accent' : ''}>Profile Details</span>
+            <span className={step >= 3 ? 'text-accent' : ''}>Preferences</span>
+          </div>
+        </div>
+      );
+    }
+    return null;
   };
   
   return (
@@ -74,13 +153,18 @@ const Login = () => {
               {isLogin ? 'Login to Your Account' : 'Create an Account'}
             </h1>
             
+            {renderProgressBar()}
+            
             <div className="flex justify-center mb-6">
               <div className="bg-secondary rounded-full p-1 grid grid-cols-2 gap-1 w-full max-w-xs">
                 <button 
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                     isLogin ? 'bg-accent text-white shadow-sm' : ''
                   }`}
-                  onClick={() => setIsLogin(true)}
+                  onClick={() => {
+                    setIsLogin(true);
+                    setStep(1);
+                  }}
                 >
                   Login
                 </button>
@@ -88,7 +172,10 @@ const Login = () => {
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                     !isLogin ? 'bg-accent text-white shadow-sm' : ''
                   }`}
-                  onClick={() => setIsLogin(false)}
+                  onClick={() => {
+                    setIsLogin(false);
+                    setStep(1);
+                  }}
                 >
                   Sign Up
                 </button>
@@ -96,88 +183,278 @@ const Login = () => {
             </div>
             
             <form onSubmit={handleSubmit} className="space-y-4">
-              {!isLogin && (
-                <div className="space-y-4">
+              {isLogin ? (
+                // Login Form
+                <>
                   <div className="relative">
                     <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                      <User size={18} />
+                      <Mail size={18} />
                     </div>
                     <input
-                      type="text"
-                      name="name"
-                      placeholder="Full Name"
-                      value={formData.name}
+                      type="email"
+                      name="email"
+                      placeholder="Email Address"
+                      value={formData.email}
                       onChange={handleChange}
-                      required={!isLogin}
+                      required
                       className="w-full pl-10 pr-4 py-3 rounded-lg border bg-transparent focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"
                     />
                   </div>
                   
                   <div className="relative">
                     <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                      <Phone size={18} />
+                      <Lock size={18} />
                     </div>
                     <input
-                      type="tel"
-                      name="phone"
-                      placeholder="Phone Number"
-                      value={formData.phone}
+                      type={showPassword ? 'text' : 'password'}
+                      name="password"
+                      placeholder="Password"
+                      value={formData.password}
                       onChange={handleChange}
-                      className="w-full pl-10 pr-4 py-3 rounded-lg border bg-transparent focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"
+                      required
+                      className="w-full pl-10 pr-10 py-3 rounded-lg border bg-transparent focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"
                     />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
                   </div>
-                </div>
+                  
+                  <div className="text-right">
+                    <Link to="/forgot-password" className="text-sm text-accent hover:underline">
+                      Forgot Password?
+                    </Link>
+                  </div>
+                </>
+              ) : (
+                // Signup Form with Steps
+                <>
+                  {step === 1 && (
+                    <div className="space-y-4">
+                      <div className="relative">
+                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                          <User size={18} />
+                        </div>
+                        <input
+                          type="text"
+                          name="name"
+                          placeholder="Full Name"
+                          value={formData.name}
+                          onChange={handleChange}
+                          required
+                          className="w-full pl-10 pr-4 py-3 rounded-lg border bg-transparent focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"
+                        />
+                      </div>
+                      
+                      <div className="relative">
+                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                          <Mail size={18} />
+                        </div>
+                        <input
+                          type="email"
+                          name="email"
+                          placeholder="Email Address"
+                          value={formData.email}
+                          onChange={handleChange}
+                          required
+                          className="w-full pl-10 pr-4 py-3 rounded-lg border bg-transparent focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"
+                        />
+                      </div>
+                      
+                      <div className="relative">
+                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                          <Phone size={18} />
+                        </div>
+                        <input
+                          type="tel"
+                          name="phone"
+                          placeholder="Phone Number"
+                          value={formData.phone}
+                          onChange={handleChange}
+                          className="w-full pl-10 pr-4 py-3 rounded-lg border bg-transparent focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"
+                        />
+                      </div>
+                      
+                      <div className="relative">
+                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                          <Lock size={18} />
+                        </div>
+                        <input
+                          type={showPassword ? 'text' : 'password'}
+                          name="password"
+                          placeholder="Password"
+                          value={formData.password}
+                          onChange={handleChange}
+                          required
+                          className="w-full pl-10 pr-10 py-3 rounded-lg border bg-transparent focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"
+                        />
+                        <button
+                          type="button"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {step === 2 && (
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="profilePicture">Profile Picture</Label>
+                        <div className="flex items-center space-x-4">
+                          <div className="w-20 h-20 rounded-full bg-secondary flex items-center justify-center overflow-hidden border-2 border-accent/20">
+                            {formData.profilePicture ? (
+                              <img 
+                                src={URL.createObjectURL(formData.profilePicture)} 
+                                alt="Profile Preview" 
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <Camera size={24} className="text-muted-foreground" />
+                            )}
+                          </div>
+                          <div>
+                            <Input
+                              id="profilePicture"
+                              type="file"
+                              accept="image/*"
+                              onChange={handleFileChange}
+                              className="hidden"
+                            />
+                            <Button 
+                              type="button" 
+                              variant="outline"
+                              size="sm"
+                              onClick={() => document.getElementById('profilePicture')?.click()}
+                            >
+                              Choose Image
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="address">Address & Location</Label>
+                        <div className="relative">
+                          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                            <MapPin size={18} />
+                          </div>
+                          <textarea
+                            id="address"
+                            name="address"
+                            placeholder="Your full address"
+                            value={formData.address}
+                            onChange={handleChange}
+                            rows={3}
+                            className="w-full pl-10 pr-4 py-3 rounded-lg border bg-transparent focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {step === 3 && (
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="paymentMethod">Preferred Payment Method</Label>
+                        <div className="relative">
+                          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                            <CreditCard size={18} />
+                          </div>
+                          <select
+                            id="paymentMethod"
+                            name="paymentMethod"
+                            value={formData.paymentMethod}
+                            onChange={handleChange}
+                            className="w-full pl-10 pr-4 py-3 rounded-lg border bg-transparent focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent appearance-none"
+                          >
+                            <option value="card">Credit/Debit Card</option>
+                            <option value="upi">UPI</option>
+                            <option value="netbanking">Net Banking</option>
+                            <option value="wallet">Digital Wallet</option>
+                          </select>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label>Contact Preferences</Label>
+                        <div className="space-y-2">
+                          <div className="flex items-center">
+                            <input
+                              type="checkbox"
+                              id="notifications.email"
+                              name="notifications.email"
+                              checked={formData.notifications.email}
+                              onChange={handleChange}
+                              className="mr-2"
+                            />
+                            <Label htmlFor="notifications.email" className="text-sm cursor-pointer">
+                              Email Notifications
+                            </Label>
+                          </div>
+                          
+                          <div className="flex items-center">
+                            <input
+                              type="checkbox"
+                              id="notifications.sms"
+                              name="notifications.sms"
+                              checked={formData.notifications.sms}
+                              onChange={handleChange}
+                              className="mr-2"
+                            />
+                            <Label htmlFor="notifications.sms" className="text-sm cursor-pointer">
+                              SMS Notifications
+                            </Label>
+                          </div>
+                          
+                          <div className="flex items-center">
+                            <input
+                              type="checkbox"
+                              id="notifications.whatsapp"
+                              name="notifications.whatsapp"
+                              checked={formData.notifications.whatsapp}
+                              onChange={handleChange}
+                              className="mr-2"
+                            />
+                            <Label htmlFor="notifications.whatsapp" className="text-sm cursor-pointer">
+                              WhatsApp Notifications
+                            </Label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
               
-              <div className="relative">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                  <Mail size={18} />
-                </div>
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Email Address"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  className="w-full pl-10 pr-4 py-3 rounded-lg border bg-transparent focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"
-                />
-              </div>
-              
-              <div className="relative">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                  <Lock size={18} />
-                </div>
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  name="password"
-                  placeholder="Password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                  className="w-full pl-10 pr-10 py-3 rounded-lg border bg-transparent focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"
-                />
-                <button
-                  type="button"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  onClick={() => setShowPassword(!showPassword)}
+              <div className="flex flex-col-reverse sm:flex-row justify-between pt-4 space-y-2 sm:space-y-0 space-y-reverse">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={handleSkip}
+                  className="mt-2 sm:mt-0"
                 >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-              
-              {isLogin && (
-                <div className="text-right">
-                  <Link to="/forgot-password" className="text-sm text-accent hover:underline">
-                    Forgot Password?
-                  </Link>
+                  Skip for Now
+                </Button>
+                
+                <div className="space-x-2">
+                  {!isLogin && step > 1 && (
+                    <Button type="button" variant="outline" onClick={handlePrevStep}>
+                      Back
+                    </Button>
+                  )}
+                  
+                  <Button type="submit">
+                    {isLogin ? 'Login' : step < 3 ? 'Next' : 'Create Account'}
+                    <ArrowRight size={16} className="ml-2" />
+                  </Button>
                 </div>
-              )}
-              
-              <Button type="submit" className="w-full">
-                {isLogin ? 'Login' : 'Create Account'}
-                <ArrowRight size={16} className="ml-2" />
-              </Button>
+              </div>
             </form>
             
             <div className="mt-6">
