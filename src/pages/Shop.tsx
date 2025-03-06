@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -51,14 +50,25 @@ const priceRanges = [
   { id: 'over60000', label: 'Over ₹60,000' }
 ];
 
-// Example products data
-const allProducts = [
+type Product = {
+  id: string;
+  title: string;
+  price: number;
+  originalPrice: number;
+  condition: "new" | "like-new" | "good" | "fair";
+  rating: number;
+  image: string;
+  isVerified: boolean;
+  category: string;
+};
+
+const allProducts: Product[] = [
   {
     id: '1',
     title: 'iPhone 13 Pro - Graphite',
     price: 699,
     originalPrice: 999,
-    condition: 'like-new',
+    condition: 'like-new' as "like-new",
     rating: 4.8,
     image: 'https://images.unsplash.com/photo-1632661674596-df8be070a5c5?q=80&w=1528&auto=format&fit=crop',
     isVerified: true,
@@ -69,7 +79,7 @@ const allProducts = [
     title: 'MacBook Air M1 - Space Gray',
     price: 849,
     originalPrice: 999,
-    condition: 'good',
+    condition: 'good' as "good",
     rating: 4.7,
     image: 'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?q=80&w=1470&auto=format&fit=crop',
     isVerified: true,
@@ -80,7 +90,7 @@ const allProducts = [
     title: 'Sony WH-1000XM4 Headphones',
     price: 249,
     originalPrice: 349,
-    condition: 'fair',
+    condition: 'fair' as "fair",
     rating: 4.5,
     image: 'https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?q=80&w=1388&auto=format&fit=crop',
     isVerified: true,
@@ -135,7 +145,7 @@ const allProducts = [
     title: 'Nintendo Switch OLED',
     price: 299,
     originalPrice: 349,
-    condition: 'new',
+    condition: 'new' as "new",
     rating: 4.9,
     image: 'https://images.unsplash.com/photo-1662997297569-a814ff20e480?q=80&w=1465&auto=format&fit=crop',
     isVerified: false,
@@ -203,7 +213,6 @@ const Shop = () => {
   const filterProducts = () => {
     let filtered = [...allProducts];
     
-    // Filter by search query
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(product => 
@@ -212,19 +221,16 @@ const Shop = () => {
       );
     }
     
-    // Filter by category
     if (selectedCategory !== 'all') {
       filtered = filtered.filter(product => product.category === selectedCategory);
     }
     
-    // Filter by condition
     if (selectedConditions.length > 0) {
       filtered = filtered.filter(product => selectedConditions.includes(product.condition));
     }
     
-    // Filter by price range
     if (selectedPriceRange !== 'all') {
-      const priceInRupees = (price) => Math.round(price * 83);
+      const priceInRupees = (price: number) => Math.round(price * 83);
       
       switch (selectedPriceRange) {
         case 'under5000':
@@ -256,7 +262,6 @@ const Shop = () => {
       }
     }
     
-    // Sort products
     switch (sortBy) {
       case 'price-low':
         filtered.sort((a, b) => a.price - b.price);
@@ -268,7 +273,6 @@ const Shop = () => {
         filtered.sort((a, b) => b.rating - a.rating);
         break;
       case 'newest':
-        // In a real app, you'd sort by date
         filtered.sort((a, b) => b.id - a.id);
         break;
       case 'discount':
@@ -279,7 +283,6 @@ const Shop = () => {
         });
         break;
       default:
-        // Relevance - could be more complex in a real app
         break;
     }
     
@@ -308,7 +311,6 @@ const Shop = () => {
       
       <main className="flex-grow pt-24">
         <div className="container mx-auto px-4 py-8">
-          {/* Page Title and Filters Toggle */}
           <div className="flex flex-wrap justify-between items-center mb-8">
             <h1 className="text-2xl md:text-3xl font-bold">Shop Electronics</h1>
             <Button 
@@ -321,7 +323,6 @@ const Shop = () => {
             </Button>
           </div>
           
-          {/* Search and Sort */}
           <div className="mb-6 flex flex-col md:flex-row gap-4">
             <div className="relative flex-grow">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
@@ -351,7 +352,6 @@ const Shop = () => {
             </div>
           </div>
           
-          {/* Categories Horizontal Scroll */}
           <div className="mb-8 overflow-x-auto hide-scrollbar">
             <div className="flex space-x-3 pb-2">
               {categories.map((category) => {
@@ -375,7 +375,6 @@ const Shop = () => {
           </div>
           
           <div className="flex flex-col md:flex-row gap-6">
-            {/* Filters - Desktop */}
             <div className="hidden md:block w-full md:w-64 space-y-6">
               <div className="glass rounded-xl p-5 border border-accent/10">
                 <div className="flex justify-between items-center mb-4">
@@ -438,7 +437,6 @@ const Shop = () => {
               </div>
             </div>
             
-            {/* Filters - Mobile */}
             {showFilters && (
               <div className="md:hidden fixed inset-0 bg-background z-50 p-4 overflow-y-auto">
                 <div className="flex justify-between items-center mb-6">
@@ -531,9 +529,7 @@ const Shop = () => {
               </div>
             )}
             
-            {/* Products Grid */}
             <div className="flex-1">
-              {/* Active filters */}
               {(selectedCategory !== 'all' || selectedConditions.length > 0 || selectedPriceRange !== 'all' || searchQuery) && (
                 <div className="mb-4 flex flex-wrap gap-2 items-center">
                   <span className="text-sm text-muted-foreground">Active Filters:</span>
@@ -608,7 +604,6 @@ const Shop = () => {
                 </div>
               )}
               
-              {/* Results count */}
               <div className="mb-4">
                 <p className="text-sm text-muted-foreground">
                   Showing {products.length} {products.length === 1 ? 'result' : 'results'}

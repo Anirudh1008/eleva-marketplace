@@ -15,9 +15,38 @@ import {
   Heart,
   Share2,
   ArrowLeft,
-  ArrowRight
+  ArrowRight,
+  X
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+
+// Define the Product type
+interface ProductDetails {
+  id: string;
+  title: string;
+  price: number;
+  originalPrice: number;
+  condition: string;
+  rating: number;
+  image: string;
+  isVerified: boolean;
+  category: string;
+  description: string;
+  specifications: Record<string, string>;
+  sellerInfo: {
+    name: string;
+    rating: number;
+    listings: number;
+    response: string;
+  };
+  verificationDetails: {
+    verified: boolean;
+    date: string;
+    score: number;
+    issues: string[];
+  };
+  images: string[];
+}
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -27,8 +56,8 @@ const ProductDetail = () => {
   const [isFavorite, setIsFavorite] = useState(false);
   
   // This would normally come from an API call using the ID
-  const product = location.state?.product || {
-    id: id,
+  const product: ProductDetails = location.state?.product || {
+    id: id || '',
     title: "iPhone 13 Pro - Graphite",
     price: 699,
     originalPrice: 999,

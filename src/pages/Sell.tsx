@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -8,12 +7,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
-import { Upload, CheckCircle, AlertTriangle, Cpu } from 'lucide-react';
-import { useToast } from '@/components/ui/toast';
+import { Upload, CheckCircle, AlertTriangle, Cpu, X } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const productCategories = [
   "Smartphones",
-  "Laptops",
+  "Laptops", 
   "Tablets",
   "Headphones",
   "Cameras",
