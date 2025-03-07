@@ -13,6 +13,10 @@ import Sell from "./pages/Sell";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import ProductDetail from "./pages/ProductDetail";
+import AIVerification from "./pages/AIVerification";
+import SmartPricing from "./pages/SmartPricing";
+import InstantComparison from "./pages/InstantComparison";
+import SwapTrade from "./pages/SwapTrade";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +35,10 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/product/:id" element={<ProductDetail />} />
+          <Route path="/ai-verification" element={<AIVerification />} />
+          <Route path="/smart-pricing" element={<SmartPricing />} />
+          <Route path="/instant-comparison" element={<InstantComparison />} />
+          <Route path="/swap-trade" element={<SwapTrade />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
