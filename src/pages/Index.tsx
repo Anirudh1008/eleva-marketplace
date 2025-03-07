@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import FeaturedProducts from '@/components/FeaturedProducts';
-import AIVerification from '@/components/AIVerification';
+import BusinessGrowth from '@/components/BusinessGrowth';
 import Footer from '@/components/Footer';
 
 const Index = () => {
@@ -24,7 +24,7 @@ const Index = () => {
       <main className="flex-grow">
         <Hero />
         <FeaturedProducts />
-        <AIVerification />
+        <BusinessGrowth />
       </main>
       
       <Footer />
