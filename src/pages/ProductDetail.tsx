@@ -1,6 +1,6 @@
 
-import React, { useState } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useParams, Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -16,9 +16,18 @@ import {
   Share2,
   ArrowLeft,
   ArrowRight,
-  X
+  X,
+  Calendar
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 // Define the Product type
 interface ProductDetails {
@@ -46,6 +55,7 @@ interface ProductDetails {
     issues: string[];
   };
   images: string[];
+  videos?: string[];
 }
 
 const ProductDetail = () => {
@@ -54,6 +64,8 @@ const ProductDetail = () => {
   const { toast } = useToast();
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [isLiveRequestModalOpen, setIsLiveRequestModalOpen] = useState(false);
   
   // This would normally come from an API call using the ID
   const product: ProductDetails = location.state?.product || {
@@ -92,6 +104,9 @@ const ProductDetail = () => {
       "https://images.unsplash.com/photo-1591337676887-a217a6970a8a?q=80&w=1480&auto=format&fit=crop",
       "https://images.unsplash.com/photo-1607936854279-55e8a4c64888?q=80&w=1528&auto=format&fit=crop",
       "https://images.unsplash.com/photo-1580910051074-3eb694886505?q=80&w=1528&auto=format&fit=crop"
+    ],
+    videos: [
+      "https://player.vimeo.com/external/645866574.sd.mp4?s=5aabca5e4ae28fbca43e8b3b1e5869e80fc18cdb&profile_id=165&oauth_token_id=57447761"
     ]
   };
   
@@ -129,10 +144,15 @@ const ProductDetail = () => {
   };
   
   const handleVideoCall = () => {
+    setIsLiveRequestModalOpen(true);
+  };
+  
+  const handleLiveVideoRequest = (date, time) => {
     toast({
-      title: "Video Call Request",
-      description: "Request for a video demonstration has been sent",
+      title: "Live Video Request Sent",
+      description: `Your request for a live video demonstration on ${date} at ${time} has been sent to the seller.`,
     });
+    setIsLiveRequestModalOpen(false);
   };
   
   const handleToggleFavorite = () => {
@@ -191,6 +211,16 @@ const ProductDetail = () => {
                     <span className="text-xs font-semibold">AI Verified</span>
                   </div>
                 )}
+
+                {product.videos && product.videos.length > 0 && (
+                  <button 
+                    onClick={() => setIsVideoModalOpen(true)}
+                    className="absolute bottom-3 right-3 glass-dark py-1.5 px-3 rounded-full flex items-center space-x-1.5 shadow-lg hover:bg-accent hover:text-white transition-colors"
+                  >
+                    <Video size={15} />
+                    <span className="text-xs font-semibold">Watch Video</span>
+                  </button>
+                )}
               </div>
               
               <div className="flex space-x-3 overflow-x-auto py-2">
@@ -220,7 +250,7 @@ const ProductDetail = () => {
                   onClick={handleVideoCall}
                 >
                   <Video size={18} className="mr-1" />
-                  Request Video Demo
+                  Request Live Demo
                 </Button>
                 
                 <Button
@@ -352,6 +382,11 @@ const ProductDetail = () => {
                         No issues detected. This product is in excellent condition.
                       </div>
                     )}
+                    
+                    <Link to="/ai-verification" className="text-accent text-sm flex items-center hover:underline">
+                      Learn more about AI Verification
+                      <ChevronRight size={14} className="ml-1" />
+                    </Link>
                   </div>
                 </div>
               )}
@@ -394,8 +429,132 @@ const ProductDetail = () => {
               </div>
             </div>
           </div>
+          
+          {/* AI Feature Recommendations */}
+          <div className="mt-16 mb-8">
+            <h2 className="text-2xl font-bold mb-6">AI Features & Insights</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Link to="/ai-verification" className="glass rounded-xl p-5 hover:shadow-md transition-all hover:border-accent/30 border border-accent/10">
+                <div className="flex items-center mb-3">
+                  <div className="p-2 bg-accent/10 rounded-full mr-3">
+                    <ShieldCheck className="text-accent" size={20} />
+                  </div>
+                  <h3 className="font-semibold">AI Verification</h3>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Get this product verified by our AI to ensure authenticity and confirm its condition.
+                </p>
+              </Link>
+              
+              <Link to="/smart-pricing" className="glass rounded-xl p-5 hover:shadow-md transition-all hover:border-accent/30 border border-accent/10">
+                <div className="flex items-center mb-3">
+                  <div className="p-2 bg-accent/10 rounded-full mr-3">
+                    <IndianRupee className="text-accent" size={20} />
+                  </div>
+                  <h3 className="font-semibold">Smart Pricing</h3>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  See price trends for this product and get AI-powered insights for negotiation.
+                </p>
+              </Link>
+              
+              <Link to="/instant-comparison" className="glass rounded-xl p-5 hover:shadow-md transition-all hover:border-accent/30 border border-accent/10">
+                <div className="flex items-center mb-3">
+                  <div className="p-2 bg-accent/10 rounded-full mr-3">
+                    <ArrowLeft className="text-accent" size={20} />
+                  </div>
+                  <h3 className="font-semibold">Instant Comparison</h3>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Compare this used product with new alternatives to make an informed decision.
+                </p>
+              </Link>
+              
+              <Link to="/swap-trade" className="glass rounded-xl p-5 hover:shadow-md transition-all hover:border-accent/30 border border-accent/10">
+                <div className="flex items-center mb-3">
+                  <div className="p-2 bg-accent/10 rounded-full mr-3">
+                    <Share2 className="text-accent" size={20} />
+                  </div>
+                  <h3 className="font-semibold">Swap & Trade</h3>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Want to trade your device for this one? Get AI-powered trade value estimates.
+                </p>
+              </Link>
+            </div>
+          </div>
         </div>
       </main>
+      
+      {/* Video Modal */}
+      <Dialog open={isVideoModalOpen} onOpenChange={setIsVideoModalOpen}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Product Video</DialogTitle>
+            <DialogDescription>
+              Watch this video to see the product in action
+            </DialogDescription>
+          </DialogHeader>
+          <div className="aspect-video w-full rounded-lg overflow-hidden bg-black">
+            {product.videos && product.videos.length > 0 && (
+              <video 
+                src={product.videos[0]} 
+                controls 
+                autoPlay 
+                className="w-full h-full"
+              >
+                Your browser does not support the video tag.
+              </video>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Live Demo Request Modal */}
+      <Dialog open={isLiveRequestModalOpen} onOpenChange={setIsLiveRequestModalOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Request Live Product Demo</DialogTitle>
+            <DialogDescription>
+              Schedule a live video call with the seller to see the product in real-time
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Select Date</label>
+                <select className="w-full rounded-md border border-input bg-background px-3 py-2">
+                  <option>Today</option>
+                  <option>Tomorrow</option>
+                  <option>In 2 days</option>
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Select Time</label>
+                <select className="w-full rounded-md border border-input bg-background px-3 py-2">
+                  <option>10:00 AM</option>
+                  <option>12:00 PM</option>
+                  <option>3:00 PM</option>
+                  <option>6:00 PM</option>
+                </select>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Additional Notes</label>
+              <textarea 
+                className="w-full rounded-md border border-input bg-background px-3 py-2 min-h-[80px]"
+                placeholder="Any specific details you want to see or questions you have..."
+              ></textarea>
+            </div>
+            <Button 
+              className="w-full" 
+              onClick={() => handleLiveVideoRequest('Tomorrow', '3:00 PM')}
+            >
+              <Calendar className="mr-2 h-4 w-4" /> Schedule Live Demo
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
       
       <Footer />
     </div>

@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, User, ShoppingCart, Menu, X, Cpu, Heart } from 'lucide-react';
+import { Search, User, ShoppingCart, Menu, X, Cpu, Heart, Trash } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import SearchBar from './SearchBar';
 import { useToast } from "@/hooks/use-toast";
@@ -273,7 +273,7 @@ const Header: React.FC = () => {
                               className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
                               onClick={() => handleRemoveFromCart(item.id)}
                             >
-                              <Trash2 size={16} />
+                              <Trash size={16} />
                             </Button>
                           </div>
                         </div>

@@ -17,6 +17,7 @@ import AIVerification from "./pages/AIVerification";
 import SmartPricing from "./pages/SmartPricing";
 import InstantComparison from "./pages/InstantComparison";
 import SwapTrade from "./pages/SwapTrade";
+import Wishlist from "./pages/Wishlist";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,7 @@ const App = () => (
           <Route path="/smart-pricing" element={<SmartPricing />} />
           <Route path="/instant-comparison" element={<InstantComparison />} />
           <Route path="/swap-trade" element={<SwapTrade />} />
+          <Route path="/wishlist" element={<Wishlist />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

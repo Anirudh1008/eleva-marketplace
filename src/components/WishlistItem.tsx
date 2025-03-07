@@ -2,7 +2,7 @@
 import React from 'react';
 import { Product } from '@/components/ProductCard';
 import { Button } from '@/components/ui/button';
-import { Heart, Trash2, ShoppingCart, IndianRupee } from 'lucide-react';
+import { Heart, Trash, ShoppingCart, IndianRupee } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/components/ui/use-toast';
 
@@ -86,7 +86,7 @@ const WishlistItem: React.FC<WishlistItemProps> = ({ product, onRemove, onAddToC
               className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
               onClick={() => onRemove(product.id)}
             >
-              <Trash2 size={16} />
+              <Trash size={16} />
             </Button>
             <Button 
               variant="outline" 
