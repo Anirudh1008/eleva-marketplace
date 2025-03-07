@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Heart, Star, ShieldCheck, Zap, IndianRupee } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { toast } from '@/components/ui/use-toast';
 
 export interface Product {
   id: string;
@@ -49,6 +50,24 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const handleViewDetails = () => {
     navigate(`/product/${product.id}`, { state: { product } });
   };
+
+  const handleToggleFavorite = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsFavorite(!isFavorite);
+    
+    if (!isFavorite) {
+      toast({
+        title: "Added to Wishlist",
+        description: `${product.title} has been added to your wishlist.`,
+      });
+    } else {
+      toast({
+        title: "Removed from Wishlist",
+        description: `${product.title} has been removed from your wishlist.`,
+      });
+    }
+  };
   
   const discount = getDiscountPercentage();
 
@@ -71,10 +90,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         className={`absolute top-3 right-3 p-2 rounded-full ${
           isFavorite ? 'bg-red-500 text-white shadow-lg' : 'glass-dark'
         } transition-all duration-300 z-10 hover:scale-110`}
-        onClick={(e) => {
-          e.preventDefault();
-          setIsFavorite(!isFavorite);
-        }}
+        onClick={handleToggleFavorite}
       >
         <Heart size={18} className={isFavorite ? 'fill-white' : ''} />
       </button>
