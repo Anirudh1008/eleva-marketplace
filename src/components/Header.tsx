@@ -1,375 +1,452 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Search, User, ShoppingCart, Menu, X, Cpu, Heart, Trash } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import SearchBar from './SearchBar';
-import { useToast } from "@/hooks/use-toast";
+import { Input } from '@/components/ui/input';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { Product } from '@/components/ProductCard';
-import WishlistItem from './WishlistItem';
+  LogIn,
+  Search,
+  Menu,
+  X,
+  ShoppingCart,
+  Bell,
+  Heart,
+  User,
+  LogOut,
+  Home,
+  Smartphone,
+  Laptop,
+  Headphones,
+  Tablet,
+  Camera,
+  Watch,
+  Gamepad,
+  Tv,
+  Speaker,
+  UserPlus
+} from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
+import { useMobile } from '@/hooks/use-mobile';
 
-// Sample cart items
-const sampleProducts: Product[] = [
-  {
-    id: '1',
-    title: 'iPhone 13 Pro - Graphite',
-    price: 699,
-    originalPrice: 999,
-    condition: 'like-new',
-    rating: 4.8,
-    image: 'https://images.unsplash.com/photo-1632661674596-df8be070a5c5?q=80&w=1528&auto=format&fit=crop',
-    isVerified: true,
-    category: 'smartphones'
-  },
-  {
-    id: '2',
-    title: 'MacBook Air M1 - Space Gray',
-    price: 849,
-    originalPrice: 999,
-    condition: 'good',
-    rating: 4.7,
-    image: 'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?q=80&w=1470&auto=format&fit=crop',
-    isVerified: true,
-    category: 'laptops'
-  },
-  {
-    id: '3',
-    title: 'Sony WH-1000XM4 Headphones',
-    price: 249,
-    originalPrice: 349,
-    condition: 'fair',
-    rating: 4.5,
-    image: 'https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?q=80&w=1388&auto=format&fit=crop',
-    isVerified: true,
-    category: 'audio'
-  }
-];
-
-const Header: React.FC = () => {
-  const [scrolled, setScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+const Header = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [wishlistItems, setWishlistItems] = useState<Product[]>([]);
-  const [cartItems, setCartItems] = useState<Product[]>([]);
-  const location = useLocation();
-  const { toast } = useToast();
+  const [notifications, setNotifications] = useState(3);
+  const [wishlistCount, setWishlistCount] = useState(5);
+  const [cartCount, setCartCount] = useState(2);
+  const isMobile = useMobile();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const handleScroll = () => {
-      const offset = window.scrollY;
-      setScrolled(offset > 10);
-    };
-    
-    window.addEventListener('scroll', handleScroll);
-    
-    // Check if user is logged in
+    // Check if user is logged in from localStorage
     const userInfo = localStorage.getItem('userInfo');
     if (userInfo) {
-      setIsLoggedIn(true);
+      try {
+        const parsed = JSON.parse(userInfo);
+        setIsLoggedIn(parsed.isLoggedIn || false);
+      } catch (error) {
+        console.error('Error parsing user info:', error);
+      }
     }
-    
-    // Load sample data for demo
-    setWishlistItems(sampleProducts.slice(0, 2));
-    setCartItems(sampleProducts.slice(1, 3));
-    
-    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close mobile menu when route changes
-  useEffect(() => {
-    setMobileMenuOpen(false);
-  }, [location.pathname]);
-
-  const isActive = (path: string) => location.pathname === path;
-  
-  const handleUserClick = () => {
-    if (isLoggedIn) {
-      // Navigate to profile
-      window.location.href = '/profile';
-    } else {
-      // Show login modal
-      toast({
-        title: "Authentication Required",
-        description: "Please login or signup to continue",
-        action: (
-          <Link to="/login">
-            <Button variant="outline" size="sm">
-              Login
-            </Button>
-          </Link>
-        ),
-      });
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/shop?search=${encodeURIComponent(searchQuery)}`);
+      setIsSearchExpanded(false);
     }
   };
 
-  const handleRemoveFromWishlist = (productId: string) => {
-    setWishlistItems(wishlistItems.filter(item => item.id !== productId));
-    toast({
-      title: "Removed from wishlist",
-      description: "The item has been removed from your wishlist."
-    });
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
   };
 
-  const handleAddToCart = (product: Product) => {
-    if (!cartItems.find(item => item.id === product.id)) {
-      setCartItems([...cartItems, product]);
-      toast({
-        title: "Added to cart",
-        description: `${product.title} has been added to your cart.`
-      });
-    } else {
-      toast({
-        title: "Already in cart",
-        description: "This item is already in your cart."
-      });
-    }
+  const handleLogout = () => {
+    localStorage.removeItem('userInfo');
+    setIsLoggedIn(false);
+    navigate('/');
   };
 
-  const handleRemoveFromCart = (productId: string) => {
-    setCartItems(cartItems.filter(item => item.id !== productId));
-    toast({
-      title: "Removed from cart",
-      description: "The item has been removed from your cart."
-    });
+  const categories = [
+    { name: 'Smartphones', icon: <Smartphone size={18} /> },
+    { name: 'Laptops', icon: <Laptop size={18} /> },
+    { name: 'Audio', icon: <Headphones size={18} /> },
+    { name: 'Tablets', icon: <Tablet size={18} /> },
+    { name: 'Cameras', icon: <Camera size={18} /> },
+    { name: 'Smartwatches', icon: <Watch size={18} /> },
+    { name: 'Gaming', icon: <Gamepad size={18} /> },
+    { name: 'TVs', icon: <Tv size={18} /> },
+    { name: 'Speakers', icon: <Speaker size={18} /> },
+  ];
+
+  const navigateToLogin = () => {
+    navigate('/login');
   };
 
-  const calculateTotal = () => {
-    return cartItems.reduce((total, item) => total + item.price, 0) * 83; // Convert to INR
+  const navigateToSignup = () => {
+    navigate('/login');
+    // The Login page has a tab for signup
   };
 
   return (
-    <header 
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        scrolled ? 'glass py-3 shadow-lg' : 'bg-transparent py-5'
-      }`}
-    >
-      <div className="container mx-auto px-4 flex items-center justify-between">
-        <Link to="/" className="flex items-center space-x-2">
-          <div className="p-1.5 bg-accent/10 rounded-lg mr-1">
-            <Cpu size={20} className="text-accent" />
+    <header className="fixed w-full top-0 left-0 z-50 glass border-b border-accent/10 shadow-sm">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <Link to="/" className="flex items-center space-x-2">
+            <div className="bg-accent p-2 rounded-full">
+              <ShoppingCart size={20} className="text-white" />
+            </div>
+            <span className="font-bold text-xl hidden sm:inline-block">AITronics</span>
+          </Link>
+
+          {/* Search Bar (Desktop) */}
+          <div className="hidden md:flex flex-1 max-w-md mx-4">
+            <form onSubmit={handleSearch} className="w-full">
+              <div className="relative">
+                <Input
+                  type="text"
+                  placeholder="Search for products..."
+                  className="pl-10 pr-4 py-2 w-full"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                <Button
+                  type="submit"
+                  variant="ghost"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 p-1 h-auto"
+                >
+                  Go
+                </Button>
+              </div>
+            </form>
           </div>
-          <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-accent to-blue-700">
-            AITronics
-          </span>
-        </Link>
 
-        <div className="hidden md:block w-1/2 max-w-xl">
-          <SearchBar />
-        </div>
-
-        <div className="hidden md:flex items-center space-x-4">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="button-hover hover:bg-accent/10 hover:text-accent"
-              >
-                <Heart size={20} className="mr-1" />
-                <span>Wishlist</span>
-                {wishlistItems.length > 0 && (
-                  <Badge className="ml-1 bg-accent text-white">{wishlistItems.length}</Badge>
-                )}
-              </Button>
-            </SheetTrigger>
-            <SheetContent className="w-full sm:max-w-md overflow-y-auto">
-              <SheetHeader className="mb-4">
-                <SheetTitle>My Wishlist</SheetTitle>
-                <SheetDescription>
-                  {wishlistItems.length > 0 ? 
-                    `You have ${wishlistItems.length} items in your wishlist.` : 
-                    "Your wishlist is empty."
-                  }
-                </SheetDescription>
-              </SheetHeader>
-              
-              {wishlistItems.length > 0 ? (
-                <div className="space-y-3 mt-4">
-                  {wishlistItems.map(item => (
-                    <WishlistItem 
-                      key={item.id} 
-                      product={item} 
-                      onRemove={handleRemoveFromWishlist}
-                      onAddToCart={handleAddToCart}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-10">
-                  <Heart size={48} className="mx-auto mb-3 text-muted-foreground" />
-                  <h3 className="text-lg font-medium mb-2">Your wishlist is empty</h3>
-                  <p className="text-muted-foreground mb-4">Start exploring and add products to your wishlist!</p>
-                  <Link to="/shop">
-                    <Button>Browse Products</Button>
-                  </Link>
-                </div>
-              )}
-            </SheetContent>
-          </Sheet>
-          
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="button-hover rounded-full hover:bg-accent/10 hover:text-accent"
-            onClick={handleUserClick}
+          {/* Mobile Search Toggle */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={() => setIsSearchExpanded(!isSearchExpanded)}
           >
-            <User size={20} />
+            <Search size={20} />
           </Button>
-          
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="button-hover rounded-full hover:bg-accent/10 hover:text-accent relative">
-                <ShoppingCart size={20} />
-                {cartItems.length > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-accent text-white text-xs flex items-center justify-center">{cartItems.length}</span>
-                )}
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto">
-              <SheetHeader className="mb-4">
-                <SheetTitle>Your Cart</SheetTitle>
-                <SheetDescription>
-                  {cartItems.length > 0 ? 
-                    `You have ${cartItems.length} items in your cart.` : 
-                    "Your cart is empty."
-                  }
-                </SheetDescription>
-              </SheetHeader>
-              
-              {cartItems.length > 0 ? (
-                <div className="space-y-4">
-                  <div className="space-y-3 mt-4">
-                    {cartItems.map(item => (
-                      <div key={item.id} className="flex border rounded-lg overflow-hidden glass">
-                        <div className="w-24 h-24 flex-shrink-0">
-                          <img 
-                            src={item.image} 
-                            alt={item.title} 
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        
-                        <div className="flex-1 p-3 flex flex-col justify-between">
-                          <div>
-                            <h3 className="font-medium text-sm line-clamp-1">{item.title}</h3>
-                            <div className="flex items-center mt-1">
-                              <span className="font-bold">₹{Math.round(item.price * 83).toLocaleString()}</span>
-                            </div>
-                          </div>
-                          
-                          <div className="flex justify-end mt-2">
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
-                              className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
-                              onClick={() => handleRemoveFromCart(item.id)}
-                            >
-                              <Trash size={16} />
-                            </Button>
-                          </div>
-                        </div>
+
+          {/* Action Buttons */}
+          <div className="flex items-center space-x-1">
+            {isLoggedIn ? (
+              <>
+                {/* Notification */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="relative">
+                      <Bell size={20} />
+                      {notifications > 0 && (
+                        <Badge
+                          className="absolute -top-1 -right-1 px-1.5 py-0.5 text-[10px] bg-red-500"
+                          variant="default"
+                        >
+                          {notifications}
+                        </Badge>
+                      )}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-64">
+                    <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    {/* Notification Items */}
+                    <div className="max-h-60 overflow-y-auto">
+                      <div className="p-2 text-sm hover:bg-accent/10 rounded-md">
+                        <p className="font-medium">Your order has been shipped!</p>
+                        <p className="text-muted-foreground">Your iPhone 13 Pro is on the way.</p>
+                        <p className="text-xs text-muted-foreground mt-1">2 hours ago</p>
                       </div>
-                    ))}
-                  </div>
-                  
-                  <div className="border-t pt-4 mt-4">
-                    <div className="flex justify-between mb-2">
-                      <span className="text-muted-foreground">Subtotal</span>
-                      <span className="font-medium">₹{calculateTotal().toLocaleString()}</span>
+                      <DropdownMenuSeparator />
+                      <div className="p-2 text-sm hover:bg-accent/10 rounded-md">
+                        <p className="font-medium">Price Drop Alert</p>
+                        <p className="text-muted-foreground">MacBook Air M1 is now 10% off!</p>
+                        <p className="text-xs text-muted-foreground mt-1">Yesterday</p>
+                      </div>
+                      <DropdownMenuSeparator />
+                      <div className="p-2 text-sm hover:bg-accent/10 rounded-md">
+                        <p className="font-medium">New Message</p>
+                        <p className="text-muted-foreground">Seller has responded to your inquiry.</p>
+                        <p className="text-xs text-muted-foreground mt-1">2 days ago</p>
+                      </div>
                     </div>
-                    <div className="flex justify-between mb-4">
-                      <span className="text-muted-foreground">Shipping</span>
-                      <span className="font-medium">Free</span>
+                    <DropdownMenuSeparator />
+                    <div className="p-2">
+                      <Button variant="ghost" className="w-full text-xs">View All Notifications</Button>
                     </div>
-                    <div className="flex justify-between text-lg font-bold">
-                      <span>Total</span>
-                      <span>₹{calculateTotal().toLocaleString()}</span>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2 pt-4">
-                    <Button className="w-full">Proceed to Checkout</Button>
-                    <Link to="/shop">
-                      <Button variant="outline" className="w-full">Continue Shopping</Button>
-                    </Link>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center py-10">
-                  <ShoppingCart size={48} className="mx-auto mb-3 text-muted-foreground" />
-                  <h3 className="text-lg font-medium mb-2">Your cart is empty</h3>
-                  <p className="text-muted-foreground mb-4">Start adding products to your cart!</p>
-                  <Link to="/shop">
-                    <Button>Browse Products</Button>
-                  </Link>
-                </div>
-              )}
-            </SheetContent>
-          </Sheet>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                {/* Wishlist */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="relative hidden sm:flex"
+                  onClick={() => navigate('/wishlist')}
+                >
+                  <Heart size={20} />
+                  {wishlistCount > 0 && (
+                    <Badge
+                      className="absolute -top-1 -right-1 px-1.5 py-0.5 text-[10px] bg-red-500"
+                      variant="default"
+                    >
+                      {wishlistCount}
+                    </Badge>
+                  )}
+                </Button>
+
+                {/* Cart */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="relative"
+                  onClick={() => navigate('/cart')}
+                >
+                  <ShoppingCart size={20} />
+                  {cartCount > 0 && (
+                    <Badge
+                      className="absolute -top-1 -right-1 px-1.5 py-0.5 text-[10px] bg-red-500"
+                      variant="default"
+                    >
+                      {cartCount}
+                    </Badge>
+                  )}
+                </Button>
+
+                {/* User Profile */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="ml-1">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src="/avatar-placeholder.png" />
+                        <AvatarFallback>
+                          <User size={16} />
+                        </AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => navigate('/profile')}>
+                      <User className="mr-2" size={16} />
+                      Profile
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate('/orders')}>
+                      Orders
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate('/wishlist')}>
+                      <Heart className="mr-2" size={16} />
+                      Wishlist
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate('/sell')}>
+                      Sell an Item
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleLogout}>
+                      <LogOut className="mr-2" size={16} />
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
+            ) : (
+              <>
+                <Button variant="ghost" size="sm" onClick={navigateToLogin} className="hidden sm:flex">
+                  <LogIn size={18} className="mr-1" />
+                  Login
+                </Button>
+                <Button variant="outline" size="sm" onClick={navigateToSignup} className="hidden sm:flex">
+                  <UserPlus size={18} className="mr-1" />
+                  Sign Up
+                </Button>
+                <Button variant="ghost" size="icon" onClick={navigateToLogin} className="sm:hidden">
+                  <LogIn size={20} />
+                </Button>
+              </>
+            )}
+
+            {/* Mobile Menu Toggle */}
+            <Button variant="ghost" size="icon" className="md:hidden ml-1" onClick={toggleMenu}>
+              {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </Button>
+          </div>
         </div>
 
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="md:hidden button-hover rounded-full"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        >
-          {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-        </Button>
+        {/* Mobile Search (Expanded) */}
+        {isSearchExpanded && (
+          <div className="py-3 md:hidden">
+            <form onSubmit={handleSearch} className="w-full">
+              <div className="relative">
+                <Input
+                  type="text"
+                  placeholder="Search for products..."
+                  className="pl-10 pr-4 py-2 w-full"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  autoFocus
+                />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                <Button
+                  type="submit"
+                  variant="ghost"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 p-1 h-auto"
+                >
+                  Go
+                </Button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {/* Category Navigation */}
+        <nav className="hidden md:flex items-center space-x-1 h-10 overflow-x-auto thin-scrollbar">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-sm font-medium"
+            onClick={() => navigate('/')}
+          >
+            <Home size={18} className="mr-1" />
+            Home
+          </Button>
+          {categories.map((category, index) => (
+            <Button
+              key={index}
+              variant="ghost"
+              size="sm"
+              className="text-sm font-medium whitespace-nowrap"
+              onClick={() => navigate(`/shop?category=${category.name.toLowerCase()}`)}
+            >
+              {category.icon}
+              <span className="ml-1">{category.name}</span>
+            </Button>
+          ))}
+        </nav>
+
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div className="md:hidden bg-background border-t border-accent/10 absolute left-0 right-0 shadow-lg">
+            <div className="container mx-auto px-4 py-4">
+              {/* Mobile Categories */}
+              <div className="grid grid-cols-3 gap-3 mb-4">
+                {categories.map((category, index) => (
+                  <Button
+                    key={index}
+                    variant="outline"
+                    className="text-xs h-auto py-2 justify-start"
+                    onClick={() => {
+                      navigate(`/shop?category=${category.name.toLowerCase()}`);
+                      setIsMenuOpen(false);
+                    }}
+                  >
+                    {category.icon}
+                    <span className="ml-1 truncate">{category.name}</span>
+                  </Button>
+                ))}
+              </div>
+
+              {/* Mobile Actions */}
+              <div className="space-y-2">
+                {isLoggedIn ? (
+                  <>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start"
+                      onClick={() => {
+                        navigate('/profile');
+                        setIsMenuOpen(false);
+                      }}
+                    >
+                      <User size={18} className="mr-2" />
+                      My Profile
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start"
+                      onClick={() => {
+                        navigate('/wishlist');
+                        setIsMenuOpen(false);
+                      }}
+                    >
+                      <Heart size={18} className="mr-2" />
+                      Wishlist
+                      {wishlistCount > 0 && (
+                        <Badge className="ml-auto" variant="default">
+                          {wishlistCount}
+                        </Badge>
+                      )}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start"
+                      onClick={() => {
+                        navigate('/sell');
+                        setIsMenuOpen(false);
+                      }}
+                    >
+                      Sell an Item
+                    </Button>
+                    <Button
+                      variant="default"
+                      className="w-full justify-start"
+                      onClick={() => {
+                        handleLogout();
+                        setIsMenuOpen(false);
+                      }}
+                    >
+                      <LogOut size={18} className="mr-2" />
+                      Logout
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start"
+                      onClick={() => {
+                        navigateToLogin();
+                        setIsMenuOpen(false);
+                      }}
+                    >
+                      <LogIn size={18} className="mr-2" />
+                      Login
+                    </Button>
+                    <Button
+                      variant="default"
+                      className="w-full justify-start"
+                      onClick={() => {
+                        navigateToSignup();
+                        setIsMenuOpen(false);
+                      }}
+                    >
+                      <UserPlus size={18} className="mr-2" />
+                      Sign Up
+                    </Button>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-
-      {/* Mobile menu */}
-      {mobileMenuOpen && (
-        <div className="md:hidden glass absolute top-full left-0 right-0 p-4 animate-fade-in shadow-lg border-t border-white/20">
-          <div className="mb-4">
-            <SearchBar />
-          </div>
-          <div className="flex flex-col space-y-3">
-            <Link 
-              to="/wishlist" 
-              className={`px-3 py-2 rounded-md transition-colors flex items-center justify-between ${
-                isActive('/wishlist') ? 'bg-accent/10 text-accent' : 'hover:bg-accent/10 hover:text-accent'
-              }`}
-            >
-              <div className="flex items-center">
-                <Heart size={16} className="mr-2" />
-                Wishlist
-              </div>
-              {wishlistItems.length > 0 && (
-                <Badge className="bg-accent text-white">{wishlistItems.length}</Badge>
-              )}
-            </Link>
-            <Link 
-              to={isLoggedIn ? "/profile" : "/login"} 
-              className="px-3 py-2 hover:bg-accent/10 rounded-md hover:text-accent transition-colors flex items-center"
-            >
-              <User size={16} className="mr-2" />
-              {isLoggedIn ? "My Profile" : "Login/Signup"}
-            </Link>
-            <Link 
-              to="/cart" 
-              className="px-3 py-2 hover:bg-accent/10 rounded-md hover:text-accent transition-colors flex justify-between items-center"
-            >
-              <div className="flex items-center">
-                <ShoppingCart size={16} className="mr-2" />
-                Cart
-              </div>
-              {cartItems.length > 0 && (
-                <Badge className="bg-accent text-white">{cartItems.length}</Badge>
-              )}
-            </Link>
-          </div>
-        </div>
-      )}
     </header>
   );
 };

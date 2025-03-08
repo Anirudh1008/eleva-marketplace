@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useLocation, useParams, Link } from 'react-router-dom';
+import { useLocation, useParams, Link, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -63,18 +63,51 @@ interface ProductDetails {
   videos?: string[];
 }
 
-const ProductDetail = () => {
-  const { id } = useParams();
-  const location = useLocation();
-  const { toast } = useToast();
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
-  const [isFavorite, setIsFavorite] = useState(false);
-  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
-  const [isLiveRequestModalOpen, setIsLiveRequestModalOpen] = useState(false);
-  
-  // This would normally come from an API call using the ID
-  const product: ProductDetails = location.state?.product || {
-    id: id || '',
+// Sample fallback product data if none is provided
+const fallbackProduct: ProductDetails = {
+  id: "fallback",
+  title: "Product Details",
+  price: 699,
+  originalPrice: 999,
+  condition: "like-new",
+  rating: 4.8,
+  image: "https://images.unsplash.com/photo-1632661674596-df8be070a5c5?q=80&w=1528&auto=format&fit=crop",
+  isVerified: true,
+  category: "Electronics",
+  description: "This product is in excellent condition with minimal signs of use.",
+  specifications: {
+    processor: "Standard",
+    storage: "64GB",
+    display: "HD Display",
+    battery: "Standard Battery"
+  },
+  sellerInfo: {
+    name: "Seller",
+    rating: 4.9,
+    listings: 12,
+    response: "Usually responds within 2 hours"
+  },
+  verificationDetails: {
+    verified: true,
+    date: "2023-10-15",
+    score: 97,
+    issues: []
+  },
+  images: [
+    "https://images.unsplash.com/photo-1632661674596-df8be070a5c5?q=80&w=1528&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1591337676887-a217a6970a8a?q=80&w=1480&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1607936854279-55e8a4c64888?q=80&w=1528&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1580910051074-3eb694886505?q=80&w=1528&auto=format&fit=crop"
+  ],
+  videos: [
+    "https://player.vimeo.com/external/645866574.sd.mp4?s=5aabca5e4ae28fbca43e8b3b1e5869e80fc18cdb&profile_id=165&oauth_token_id=57447761"
+  ]
+};
+
+// Define the product catalog for retrieving products
+const productCatalog = {
+  "1": {
+    id: "1",
     title: "iPhone 13 Pro - Graphite",
     price: 699,
     originalPrice: 999,
@@ -82,7 +115,7 @@ const ProductDetail = () => {
     rating: 4.8,
     image: "https://images.unsplash.com/photo-1632661674596-df8be070a5c5?q=80&w=1528&auto=format&fit=crop",
     isVerified: true,
-    category: "Smartphones",
+    category: "smartphones",
     description: "This iPhone 13 Pro is in excellent condition with minimal signs of use. The battery health is at 92%, and all features work perfectly. Comes with original charger and box.",
     specifications: {
       processor: "A15 Bionic",
@@ -113,7 +146,311 @@ const ProductDetail = () => {
     videos: [
       "https://player.vimeo.com/external/645866574.sd.mp4?s=5aabca5e4ae28fbca43e8b3b1e5869e80fc18cdb&profile_id=165&oauth_token_id=57447761"
     ]
-  };
+  },
+  "2": {
+    id: "2",
+    title: "MacBook Air M1 - Space Gray",
+    price: 849,
+    originalPrice: 999,
+    condition: "good",
+    rating: 4.7,
+    image: "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?q=80&w=1470&auto=format&fit=crop",
+    isVerified: true,
+    category: "laptops",
+    description: "M1 MacBook Air with 8GB RAM and 256GB storage. Minor wear on the bottom case. Great performance and long battery life.",
+    specifications: {
+      processor: "Apple M1",
+      ram: "8GB",
+      storage: "256GB SSD",
+      display: "13.3-inch Retina Display",
+      graphics: "Apple 7-core GPU",
+      battery: "Up to 18 hours"
+    },
+    sellerInfo: {
+      name: "Aman Verma",
+      rating: 4.8,
+      listings: 8,
+      response: "Usually responds within 4 hours"
+    },
+    verificationDetails: {
+      verified: true,
+      date: "2023-11-02",
+      score: 94,
+      issues: ["Minor scratches on bottom case"]
+    },
+    images: [
+      "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?q=80&w=1470&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=1452&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1537498425277-c283d32ef9db?q=80&w=1478&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?q=80&w=1471&auto=format&fit=crop"
+    ],
+    videos: []
+  },
+  "3": {
+    id: "3",
+    title: "Sony WH-1000XM4 Headphones",
+    price: 249,
+    originalPrice: 349,
+    condition: "fair",
+    rating: 4.5,
+    image: "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?q=80&w=1388&auto=format&fit=crop",
+    isVerified: true,
+    category: "audio",
+    description: "Sony WH-1000XM4 wireless noise-cancelling headphones. Good condition with some wear on ear pads. Amazing sound quality and noise cancellation performance.",
+    specifications: {
+      type: "Over-ear wireless",
+      battery: "Up to 30 hours",
+      connectivity: "Bluetooth 5.0, 3.5mm",
+      features: "Active Noise Cancellation, LDAC",
+      microphone: "Built-in with voice assistant support",
+      weight: "254g"
+    },
+    sellerInfo: {
+      name: "Priya Patel",
+      rating: 4.6,
+      listings: 5,
+      response: "Usually responds within 1 day"
+    },
+    verificationDetails: {
+      verified: true,
+      date: "2023-09-12",
+      score: 89,
+      issues: ["Wear on ear pads", "Small scratch on right ear cup"]
+    },
+    images: [
+      "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?q=80&w=1388&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1546435770-a3e4e3a8a8dc?q=80&w=1465&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?q=80&w=1632&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1572536147248-ac59a8abfa4b?q=80&w=1470&auto=format&fit=crop"
+    ],
+    videos: [
+      "https://player.vimeo.com/external/422964005.sd.mp4?s=cd90f4434c4a7915fad87067bd240da68a78adcc&profile_id=165&oauth_token_id=57447761"
+    ]
+  },
+  "4": {
+    id: "4",
+    title: "iPad Pro 12.9\" M1 Chip",
+    price: 899,
+    originalPrice: 1099,
+    condition: "like-new",
+    rating: 4.9,
+    image: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?q=80&w=1374&auto=format&fit=crop",
+    isVerified: true,
+    category: "tablets",
+    description: "M1 iPad Pro 12.9-inch with 256GB storage. Like-new condition with no scratches or dents. Includes original charger and box.",
+    specifications: {
+      processor: "Apple M1",
+      storage: "256GB",
+      display: "12.9-inch Liquid Retina XDR",
+      camera: "12MP Wide + 10MP Ultra Wide",
+      connectivity: "Wi-Fi 6, Bluetooth 5.0",
+      battery: "Up to 10 hours"
+    },
+    sellerInfo: {
+      name: "Vikram Malhotra",
+      rating: 5.0,
+      listings: 23,
+      response: "Usually responds within 1 hour"
+    },
+    verificationDetails: {
+      verified: true,
+      date: "2023-12-05",
+      score: 99,
+      issues: []
+    },
+    images: [
+      "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?q=80&w=1374&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1542751110-97427bbecf20?q=80&w=1476&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1588058365548-9ded1f5f2c3a?q=80&w=1470&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1589739900671-6d2a450257b2?q=80&w=1472&auto=format&fit=crop"
+    ],
+    videos: []
+  },
+  "n1": {
+    id: "n1",
+    title: "iPhone 14 Pro - Alpine Blue",
+    price: 999,
+    originalPrice: 999,
+    condition: "new",
+    rating: 5.0,
+    image: "https://images.unsplash.com/photo-1664478546384-d57e49cf5b3e?q=80&w=2070&auto=format&fit=crop",
+    isVerified: true,
+    category: "smartphones",
+    description: "Brand new iPhone 14 Pro in Alpine Blue. Sealed in box with full warranty. Latest A16 Bionic chip with advanced camera system.",
+    specifications: {
+      processor: "A16 Bionic",
+      ram: "6GB",
+      storage: "128GB",
+      display: "6.1-inch Super Retina XDR with ProMotion",
+      camera: "48MP Main + 12MP Ultra Wide + 12MP Telephoto",
+      battery: "Up to 23 hours video playback"
+    },
+    sellerInfo: {
+      name: "Official AITronics Store",
+      rating: 4.95,
+      listings: 124,
+      response: "Usually responds within 30 minutes"
+    },
+    verificationDetails: {
+      verified: true,
+      date: "2024-01-15",
+      score: 100,
+      issues: []
+    },
+    images: [
+      "https://images.unsplash.com/photo-1664478546384-d57e49cf5b3e?q=80&w=2070&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1678719576311-1f4acd9bdbc9?q=80&w=1547&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1662947995584-0a378395cd0f?q=80&w=1407&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1678836096094-784e17cd83e8?q=80&w=1528&auto=format&fit=crop"
+    ],
+    videos: [
+      "https://player.vimeo.com/external/596639007.sd.mp4?s=efe1076f9b91f3157afec596bb0e3fbd4bfcf1a9&profile_id=165&oauth_token_id=57447761"
+    ]
+  },
+  "n2": {
+    id: "n2",
+    title: "MacBook Pro M2 - Silver",
+    price: 1299,
+    originalPrice: 1299,
+    condition: "new",
+    rating: 5.0,
+    image: "https://images.unsplash.com/photo-1569770218135-bea267ed7e84?q=80&w=1480&auto=format&fit=crop",
+    isVerified: true,
+    category: "laptops",
+    description: "Brand new MacBook Pro with M2 chip. Sealed in box with full warranty. Powerful performance with amazing battery life.",
+    specifications: {
+      processor: "Apple M2",
+      ram: "16GB",
+      storage: "512GB SSD",
+      display: "14-inch Liquid Retina XDR",
+      graphics: "Apple 10-core GPU",
+      battery: "Up to 20 hours"
+    },
+    sellerInfo: {
+      name: "Official AITronics Store",
+      rating: 4.95,
+      listings: 124,
+      response: "Usually responds within 30 minutes"
+    },
+    verificationDetails: {
+      verified: true,
+      date: "2024-01-15",
+      score: 100,
+      issues: []
+    },
+    images: [
+      "https://images.unsplash.com/photo-1569770218135-bea267ed7e84?q=80&w=1480&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?q=80&w=1470&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?q=80&w=1374&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=1452&auto=format&fit=crop"
+    ],
+    videos: []
+  },
+  "n3": {
+    id: "n3",
+    title: "Sony WH-1000XM5 Headphones",
+    price: 399,
+    originalPrice: 399,
+    condition: "new",
+    rating: 5.0,
+    image: "https://images.unsplash.com/photo-1629367494173-c78a56567877?q=80&w=2127&auto=format&fit=crop",
+    isVerified: true,
+    category: "audio",
+    description: "Brand new Sony WH-1000XM5 wireless noise-cancelling headphones. Sealed in box with full warranty. Industry-leading noise cancellation and premium sound quality.",
+    specifications: {
+      type: "Over-ear wireless",
+      battery: "Up to 40 hours",
+      connectivity: "Bluetooth 5.2, 3.5mm",
+      features: "Industry-leading Noise Cancellation, LDAC, DSEE Extreme",
+      microphone: "8 microphones with AI noise reduction",
+      weight: "250g"
+    },
+    sellerInfo: {
+      name: "Official AITronics Store",
+      rating: 4.95,
+      listings: 124,
+      response: "Usually responds within 30 minutes"
+    },
+    verificationDetails: {
+      verified: true,
+      date: "2024-01-15",
+      score: 100,
+      issues: []
+    },
+    images: [
+      "https://images.unsplash.com/photo-1629367494173-c78a56567877?q=80&w=2127&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?q=80&w=1388&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?q=80&w=1632&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1484704849700-f032a568e944?q=80&w=1470&auto=format&fit=crop"
+    ],
+    videos: []
+  },
+  "n4": {
+    id: "n4",
+    title: "iPad Pro 12.9\" M2 Chip",
+    price: 1099,
+    originalPrice: 1099,
+    condition: "new",
+    rating: 5.0,
+    image: "https://images.unsplash.com/photo-1623126908029-58c31ac7e48e?q=80&w=2070&auto=format&fit=crop",
+    isVerified: true,
+    category: "tablets",
+    description: "Brand new iPad Pro with M2 chip. Sealed in box with full warranty. Incredible performance with stunning display and powerful features.",
+    specifications: {
+      processor: "Apple M2",
+      storage: "512GB",
+      display: "12.9-inch Liquid Retina XDR with ProMotion",
+      camera: "12MP Wide + 10MP Ultra Wide + LiDAR",
+      connectivity: "Wi-Fi 6E, Bluetooth 5.3, 5G (optional)",
+      battery: "Up to 10 hours"
+    },
+    sellerInfo: {
+      name: "Official AITronics Store",
+      rating: 4.95,
+      listings: 124,
+      response: "Usually responds within 30 minutes"
+    },
+    verificationDetails: {
+      verified: true,
+      date: "2024-01-15",
+      score: 100,
+      issues: []
+    },
+    images: [
+      "https://images.unsplash.com/photo-1623126908029-58c31ac7e48e?q=80&w=2070&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?q=80&w=1374&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1542751110-97427bbecf20?q=80&w=1476&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1589739900671-6d2a450257b2?q=80&w=1472&auto=format&fit=crop"
+    ],
+    videos: []
+  }
+};
+
+const ProductDetail = () => {
+  const { id } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [isLiveRequestModalOpen, setIsLiveRequestModalOpen] = useState(false);
+  
+  // Use product data from location state OR from the catalog based on ID, with fallback
+  let product: ProductDetails;
+  
+  if (location.state?.product) {
+    product = location.state.product;
+  } else if (id && productCatalog[id]) {
+    product = productCatalog[id];
+  } else {
+    product = fallbackProduct;
+  }
+  
+  // Ensure product has images array
+  if (!product.images || product.images.length === 0) {
+    product.images = [product.image];
+  }
   
   // Convert USD to INR
   const priceInRupees = Math.round(product.price * 83);
