@@ -35,6 +35,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { toast } from '@/components/ui/use-toast';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -44,6 +45,7 @@ const Header = () => {
   const [notifications, setNotifications] = useState(3);
   const [wishlistCount, setWishlistCount] = useState(5);
   const [cartCount, setCartCount] = useState(2);
+  const [cartItems, setCartItems] = useState([]);
   const isMobile = useIsMobile();
   const navigate = useNavigate();
 
@@ -57,6 +59,18 @@ const Header = () => {
       } catch (error) {
         console.error('Error parsing user info:', error);
       }
+    }
+
+    // Get cart items from localStorage
+    try {
+      const storedCartItems = localStorage.getItem('cartItems');
+      if (storedCartItems) {
+        const items = JSON.parse(storedCartItems);
+        setCartItems(items);
+        setCartCount(items.length);
+      }
+    } catch (error) {
+      console.error('Error loading cart items:', error);
     }
   }, []);
 
@@ -78,6 +92,15 @@ const Header = () => {
     navigate('/');
   };
 
+  const navigateToCategory = (category) => {
+    navigate(`/shop?category=${category.toLowerCase()}`);
+    setIsMenuOpen(false);
+    toast({
+      title: `Browsing ${category}`,
+      description: `Showing all products in ${category} category`,
+    });
+  };
+
   const categories = [
     { name: 'Smartphones', icon: <Smartphone size={18} /> },
     { name: 'Laptops', icon: <Laptop size={18} /> },
@@ -95,8 +118,11 @@ const Header = () => {
   };
 
   const navigateToSignup = () => {
-    navigate('/login');
-    // The Login page has a tab for signup
+    navigate('/login?tab=signup');
+  };
+
+  const handleCartIconClick = () => {
+    navigate('/cart');
   };
 
   return (
@@ -216,7 +242,7 @@ const Header = () => {
                   variant="ghost"
                   size="icon"
                   className="relative"
-                  onClick={() => navigate('/cart')}
+                  onClick={handleCartIconClick}
                 >
                   <ShoppingCart size={20} />
                   {cartCount > 0 && (
@@ -332,7 +358,7 @@ const Header = () => {
               variant="ghost"
               size="sm"
               className="text-sm font-medium whitespace-nowrap"
-              onClick={() => navigate(`/shop?category=${category.name.toLowerCase()}`)}
+              onClick={() => navigateToCategory(category.name)}
             >
               {category.icon}
               <span className="ml-1">{category.name}</span>
@@ -351,10 +377,7 @@ const Header = () => {
                     key={index}
                     variant="outline"
                     className="text-xs h-auto py-2 justify-start"
-                    onClick={() => {
-                      navigate(`/shop?category=${category.name.toLowerCase()}`);
-                      setIsMenuOpen(false);
-                    }}
+                    onClick={() => navigateToCategory(category.name)}
                   >
                     {category.icon}
                     <span className="ml-1 truncate">{category.name}</span>

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -55,8 +54,21 @@ const Wishlist = () => {
     // In a real app, fetch wishlist from backend or localStorage
     setWishlistItems(sampleProducts);
     
-    // Sample cart items for demo
-    setCartItems([sampleProducts[0]]);
+    // Get cart items from localStorage
+    try {
+      const storedCartItems = localStorage.getItem('cartItems');
+      if (storedCartItems) {
+        setCartItems(JSON.parse(storedCartItems));
+      } else {
+        // Sample cart items for demo if none exist
+        setCartItems([sampleProducts[0]]);
+        localStorage.setItem('cartItems', JSON.stringify([sampleProducts[0]]));
+      }
+    } catch (error) {
+      console.error('Error loading cart items:', error);
+      // Fallback to demo
+      setCartItems([sampleProducts[0]]);
+    }
   }, []);
 
   const handleRemoveFromWishlist = (productId: string) => {
@@ -69,7 +81,12 @@ const Wishlist = () => {
 
   const handleAddToCart = (product: Product) => {
     if (!cartItems.find(item => item.id === product.id)) {
-      setCartItems([...cartItems, product]);
+      const updatedCart = [...cartItems, product];
+      setCartItems(updatedCart);
+      
+      // Update localStorage
+      localStorage.setItem('cartItems', JSON.stringify(updatedCart));
+      
       toast({
         title: "Added to cart",
         description: `${product.title} has been added to your cart`
@@ -88,7 +105,12 @@ const Wishlist = () => {
     );
     
     if (newItems.length > 0) {
-      setCartItems([...cartItems, ...newItems]);
+      const updatedCart = [...cartItems, ...newItems];
+      setCartItems(updatedCart);
+      
+      // Update localStorage
+      localStorage.setItem('cartItems', JSON.stringify(updatedCart));
+      
       toast({
         title: "Items added to cart",
         description: `${newItems.length} items have been added to your cart`

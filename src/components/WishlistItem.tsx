@@ -35,6 +35,29 @@ const WishlistItem: React.FC<WishlistItemProps> = ({ product, onRemove, onAddToC
   
   const discount = getDiscountPercentage();
 
+  const handleAddToCart = () => {
+    // Add the item to cart in localStorage first
+    try {
+      const existingCartItems = localStorage.getItem('cartItems');
+      let cartItems = [];
+      
+      if (existingCartItems) {
+        cartItems = JSON.parse(existingCartItems);
+      }
+      
+      // Check if the product is already in cart
+      if (!cartItems.some(item => item.id === product.id)) {
+        cartItems.push(product);
+        localStorage.setItem('cartItems', JSON.stringify(cartItems));
+      }
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+    }
+    
+    // Call the provided onAddToCart function
+    onAddToCart(product);
+  };
+
   return (
     <div className="flex border rounded-lg overflow-hidden glass hover:shadow-md transition-all duration-300">
       <div className="w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0">
@@ -92,13 +115,7 @@ const WishlistItem: React.FC<WishlistItemProps> = ({ product, onRemove, onAddToC
               variant="outline" 
               size="sm" 
               className="h-8 text-xs bg-accent/10 hover:bg-accent/20 text-accent"
-              onClick={() => {
-                onAddToCart(product);
-                toast({
-                  title: "Added to cart!",
-                  description: `${product.title} has been added to your cart.`,
-                });
-              }}
+              onClick={handleAddToCart}
             >
               <ShoppingCart size={14} className="mr-1" />
               Add to Cart

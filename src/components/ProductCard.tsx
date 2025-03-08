@@ -3,7 +3,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Star, Shield, Info } from 'lucide-react';
+import { Star, Shield, Info, IndianRupee } from 'lucide-react';
 import { Product } from './FeaturedProducts';
 
 interface ProductCardProps {
@@ -12,6 +12,10 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const navigate = useNavigate();
+  
+  // Convert USD to INR (83 is the approximate conversion rate)
+  const priceInRupees = Math.round(product.price * 83);
+  const originalPriceInRupees = product.originalPrice ? Math.round(product.originalPrice * 83) : undefined;
   
   const getConditionColor = (condition: string) => {
     switch(condition) {
@@ -105,10 +109,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </div>
         
         <div className="flex items-center space-x-2">
-          <span className="font-bold text-lg">${product.price}</span>
+          <div className="flex items-center">
+            <IndianRupee size={16} />
+            <span className="font-bold text-lg">{priceInRupees.toLocaleString()}</span>
+          </div>
           {product.originalPrice > product.price && (
             <span className="text-muted-foreground line-through text-sm">
-              ${product.originalPrice}
+              ₹{originalPriceInRupees?.toLocaleString()}
             </span>
           )}
         </div>
