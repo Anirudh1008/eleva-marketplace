@@ -2,7 +2,7 @@
 import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { Shield, Check, AlertTriangle, Zap, ArrowRight } from 'lucide-react';
+import { Shield, Check, AlertTriangle, Zap, ArrowRight, BadgeCheck, Cpu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
@@ -33,6 +33,15 @@ const AIVerification = () => {
                 Our advanced AI verification system analyzes product images, videos, and data 
                 to ensure authenticity, detect fraud, and provide accurate condition reports.
               </p>
+              
+              {/* New Discount Banner */}
+              <div className="mt-8 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg p-4 text-white max-w-2xl mx-auto animate-pulse">
+                <div className="flex items-center justify-center">
+                  <BadgeCheck size={24} className="mr-2" />
+                  <span className="font-bold text-lg">LIMITED TIME OFFER: 30% OFF AI VERIFICATION!</span>
+                </div>
+                <p className="text-sm mt-1">Verify your products at a discounted price for a limited time</p>
+              </div>
             </div>
           </div>
         </section>
@@ -42,18 +51,18 @@ const AIVerification = () => {
             {[
               {
                 icon: <Shield className="h-10 w-10 text-accent" />,
-                title: "Authenticity Verification",
-                description: "Our AI analyzes images and product details to verify authenticity, comparing against manufacturer databases to catch counterfeits."
+                title: "Product Authenticity",
+                description: "Our AI analyzes images and product details to verify authenticity, comparing against manufacturer databases to catch counterfeits and fake products."
               },
               {
                 icon: <Check className="h-10 w-10 text-green-500" />,
                 title: "Condition Assessment",
-                description: "Advanced image processing evaluates physical condition, wear and tear, and functionality to provide accurate condition ratings."
+                description: "Advanced image processing evaluates physical condition, wear and tear, and functionality to provide accurate condition ratings with detailed reports."
               },
               {
                 icon: <AlertTriangle className="h-10 w-10 text-amber-500" />,
-                title: "Fraud Detection",
-                description: "Pattern recognition algorithms identify suspicious listings, helping protect buyers from scams and fraudulent sellers."
+                title: "Fault Detection",
+                description: "Our AI can detect hidden faults by analyzing sound patterns, performance metrics, and visual anomalies that might not be visible to the human eye."
               }
             ].map((feature, index) => (
               <Card key={index} className="glass border border-white/20 backdrop-blur-lg shadow-xl">
@@ -78,22 +87,22 @@ const AIVerification = () => {
                 {
                   number: "01",
                   title: "Upload & Analyze",
-                  description: "Sellers upload multiple photos and videos of their product. Our AI system analyzes visual data using computer vision algorithms."
+                  description: "Sellers upload multiple photos and videos of their product. Our AI system analyzes visual data using computer vision algorithms to identify product features and condition."
                 },
                 {
                   number: "02",
-                  title: "Verify & Validate",
-                  description: "The system cross-references with manufacturer databases and checks serial numbers to confirm authenticity."
+                  title: "Verify Authenticity",
+                  description: "The system cross-references with manufacturer databases and checks serial numbers to confirm authenticity and detect counterfeits with 99% accuracy."
                 },
                 {
                   number: "03",
-                  title: "Condition Report",
-                  description: "AI generates a detailed condition report, highlighting any defects, wear patterns, or functionality issues."
+                  title: "Detailed Condition Assessment",
+                  description: "AI generates a comprehensive condition report, highlighting any defects, wear patterns, or functionality issues with precise measurements and impact on usability."
                 },
                 {
                   number: "04",
-                  title: "Fraud Check",
-                  description: "Our system runs multiple fraud detection algorithms to identify suspicious listings or seller behaviors."
+                  title: "Security Check",
+                  description: "We verify that the product isn't reported stolen and that it's free from security locks or other restrictions that might affect the buyer."
                 }
               ].map((step, index) => (
                 <div key={index} className="flex items-start gap-6">
@@ -113,15 +122,15 @@ const AIVerification = () => {
         <section className="bg-accent/10 py-16 mb-16">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center">
-              <h2 className="text-3xl font-bold mb-6">Ready to Sell or Buy with Confidence?</h2>
+              <h2 className="text-3xl font-bold mb-6">Ready to Verify Your Electronics?</h2>
               <p className="text-xl text-muted-foreground mb-10">
-                Use our AI verification system to ensure authenticity and fair pricing for all your electronic transactions.
+                Use our AI verification system to ensure authenticity and build trust with buyers.
               </p>
               
               <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <Link to="/sell">
                   <Button size="lg" className="w-full sm:w-auto">
-                    Sell with AI Verification
+                    Verify Your Product Now
                     <ArrowRight size={18} className="ml-2" />
                   </Button>
                 </Link>

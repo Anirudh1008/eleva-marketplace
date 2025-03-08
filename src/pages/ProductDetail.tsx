@@ -17,7 +17,12 @@ import {
   ArrowLeft,
   ArrowRight,
   X,
-  Calendar
+  Calendar,
+  Cpu,
+  BarChart4,
+  RefreshCcw,
+  Lock,
+  Bot
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -430,10 +435,10 @@ const ProductDetail = () => {
             </div>
           </div>
           
-          {/* AI Feature Recommendations */}
+          {/* Enhanced AI Feature Recommendations */}
           <div className="mt-16 mb-8">
-            <h2 className="text-2xl font-bold mb-6">AI Features & Insights</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <h2 className="text-2xl font-bold mb-6">AI-Powered Features & Insights</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
               <Link to="/ai-verification" className="glass rounded-xl p-5 hover:shadow-md transition-all hover:border-accent/30 border border-accent/10">
                 <div className="flex items-center mb-3">
                   <div className="p-2 bg-accent/10 rounded-full mr-3">
@@ -442,19 +447,19 @@ const ProductDetail = () => {
                   <h3 className="font-semibold">AI Verification</h3>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Get this product verified by our AI to ensure authenticity and confirm its condition.
+                  Authenticate and verify product condition using our advanced AI technology.
                 </p>
               </Link>
               
               <Link to="/smart-pricing" className="glass rounded-xl p-5 hover:shadow-md transition-all hover:border-accent/30 border border-accent/10">
                 <div className="flex items-center mb-3">
                   <div className="p-2 bg-accent/10 rounded-full mr-3">
-                    <IndianRupee className="text-accent" size={20} />
+                    <BarChart4 className="text-accent" size={20} />
                   </div>
                   <h3 className="font-semibold">Smart Pricing</h3>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  See price trends for this product and get AI-powered insights for negotiation.
+                  Get AI-powered pricing analysis and market trend insights for better deals.
                 </p>
               </Link>
               
@@ -466,21 +471,99 @@ const ProductDetail = () => {
                   <h3 className="font-semibold">Instant Comparison</h3>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Compare this used product with new alternatives to make an informed decision.
+                  Compare new vs. used alternatives to make data-driven purchase decisions.
                 </p>
               </Link>
               
               <Link to="/swap-trade" className="glass rounded-xl p-5 hover:shadow-md transition-all hover:border-accent/30 border border-accent/10">
                 <div className="flex items-center mb-3">
                   <div className="p-2 bg-accent/10 rounded-full mr-3">
-                    <Share2 className="text-accent" size={20} />
+                    <RefreshCcw className="text-accent" size={20} />
                   </div>
                   <h3 className="font-semibold">Swap & Trade</h3>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Want to trade your device for this one? Get AI-powered trade value estimates.
+                  Trade your device using our AI-powered matching system for fair exchanges.
                 </p>
               </Link>
+              
+              <Link to="/ai-fraud-detection" className="glass rounded-xl p-5 hover:shadow-md transition-all hover:border-accent/30 border border-accent/10">
+                <div className="flex items-center mb-3">
+                  <div className="p-2 bg-accent/10 rounded-full mr-3">
+                    <Lock className="text-accent" size={20} />
+                  </div>
+                  <h3 className="font-semibold">Fraud Detection</h3>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Our AI system prevents scams and verifies that products aren't stolen.
+                </p>
+              </Link>
+            </div>
+          </div>
+          
+          {/* Verified Sellers & AI Protection Section */}
+          <div className="my-16 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8 border border-blue-100/50">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold mb-3">Verified Sellers & AI Protection</h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Our marketplace ensures safe transactions and provides comprehensive protection for all users.
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="glass bg-white/80 rounded-xl p-6 border border-accent/10 relative overflow-hidden">
+                <div className="absolute -top-2 -right-2 bg-red-500 text-white px-4 py-1 rotate-12 text-xs font-bold">
+                  30% OFF
+                </div>
+                <div className="flex items-start mb-4">
+                  <div className="p-3 rounded-full bg-accent/10 mr-4">
+                    <ShieldCheck className="text-accent h-6 w-6" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-lg mb-1">AI-Verified Badge</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Get your products verified by our AI system at a special discounted rate and boost buyer confidence.
+                    </p>
+                  </div>
+                </div>
+                <Link to="/ai-verification">
+                  <Button variant="outline" className="w-full">Get Verified</Button>
+                </Link>
+              </div>
+              
+              <div className="glass bg-white/80 rounded-xl p-6 border border-accent/10">
+                <div className="flex items-start mb-4">
+                  <div className="p-3 rounded-full bg-green-100 mr-4">
+                    <Lock className="text-green-600 h-6 w-6" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-lg mb-1">AI Money Protection</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Our escrow payment system ensures your money is protected until you receive and verify the product.
+                    </p>
+                  </div>
+                </div>
+                <Link to="/payment-protection">
+                  <Button variant="outline" className="w-full">Learn More</Button>
+                </Link>
+              </div>
+              
+              <div className="glass bg-white/80 rounded-xl p-6 border border-accent/10">
+                <div className="flex items-start mb-4">
+                  <div className="p-3 rounded-full bg-purple-100 mr-4">
+                    <BarChart4 className="text-purple-600 h-6 w-6" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-lg mb-1">Boost Listings</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Increase your product visibility with our AI-powered advertisement system to reach more potential buyers.
+                    </p>
+                  </div>
+                </div>
+                <Link to="/boost-listing">
+                  <Button variant="outline" className="w-full">Boost Now</Button>
+                </Link>
+              </div>
             </div>
           </div>
         </div>

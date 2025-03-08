@@ -1,143 +1,163 @@
 
 import React from 'react';
-import ProductCard, { Product } from './ProductCard';
+import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useNavigate } from 'react-router-dom';
+import ProductCard from './ProductCard';
+import { Link, useNavigate } from 'react-router-dom';
 
-const featuredProducts: Product[] = [
+const featuredProducts = [
   {
-    id: '1',
-    title: 'iPhone 13 Pro - Graphite',
+    id: "1",
+    title: "iPhone 13 Pro - Graphite",
     price: 699,
     originalPrice: 999,
-    condition: 'like-new',
+    condition: "like-new",
     rating: 4.8,
-    image: 'https://images.unsplash.com/photo-1632661674596-df8be070a5c5?q=80&w=1528&auto=format&fit=crop',
+    image: "https://images.unsplash.com/photo-1632661674596-df8be070a5c5?q=80&w=1528&auto=format&fit=crop",
     isVerified: true,
-    category: 'Smartphones'
+    category: "smartphones"
   },
   {
-    id: '2',
-    title: 'MacBook Air M1 - Space Gray',
+    id: "2",
+    title: "MacBook Air M1 - Space Gray",
     price: 849,
     originalPrice: 999,
-    condition: 'good',
+    condition: "good",
     rating: 4.7,
-    image: 'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?q=80&w=1470&auto=format&fit=crop',
+    image: "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?q=80&w=1470&auto=format&fit=crop",
     isVerified: true,
-    category: 'Laptops'
+    category: "laptops"
   },
   {
-    id: '3',
-    title: 'Sony WH-1000XM4 Headphones',
+    id: "3",
+    title: "Sony WH-1000XM4 Headphones",
     price: 249,
     originalPrice: 349,
-    condition: 'fair',
+    condition: "fair",
     rating: 4.5,
-    image: 'https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?q=80&w=1388&auto=format&fit=crop',
+    image: "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?q=80&w=1388&auto=format&fit=crop",
     isVerified: true,
-    category: 'Audio'
+    category: "audio"
   },
   {
-    id: '4',
-    title: 'DJI Mini 3 Pro Drone',
-    price: 599,
-    originalPrice: 759,
-    condition: 'good',
-    rating: 4.6,
-    image: 'https://images.unsplash.com/photo-1473968512647-3e447244af8f?q=80&w=1470&auto=format&fit=crop',
-    isVerified: true,
-    category: 'Drones'
-  },
-  {
-    id: '5',
-    title: 'iPad Pro 12.9" M1 Chip',
+    id: "4",
+    title: "iPad Pro 12.9\" M1 Chip",
     price: 899,
     originalPrice: 1099,
-    condition: 'like-new',
+    condition: "like-new",
     rating: 4.9,
-    image: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?q=80&w=1374&auto=format&fit=crop',
+    image: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?q=80&w=1374&auto=format&fit=crop",
     isVerified: true,
-    category: 'Tablets'
-  },
-  {
-    id: '6',
-    title: 'Samsung Galaxy S22 Ultra',
-    price: 799,
-    originalPrice: 1199,
-    condition: 'good',
-    rating: 4.7,
-    image: 'https://images.unsplash.com/photo-1659776680419-9d59ae0db230?q=80&w=1374&auto=format&fit=crop',
-    isVerified: true,
-    category: 'Smartphones'
-  },
-  {
-    id: '7',
-    title: 'Apple Watch Series 7',
-    price: 299,
-    originalPrice: 399,
-    condition: 'like-new',
-    rating: 4.6,
-    image: 'https://images.unsplash.com/photo-1551816230-ef5deaed4a26?q=80&w=1444&auto=format&fit=crop',
-    isVerified: true,
-    category: 'Wearables'
-  },
-  {
-    id: '8',
-    title: 'Nintendo Switch OLED',
-    price: 299,
-    originalPrice: 349,
-    condition: 'new',
-    rating: 4.9,
-    image: 'https://images.unsplash.com/photo-1662997297569-a814ff20e480?q=80&w=1465&auto=format&fit=crop',
-    isVerified: false,
-    category: 'Gaming'
-  },
+    category: "tablets"
+  }
 ];
 
-const FeaturedProducts: React.FC = () => {
+// New product listings for comparison
+const newProducts = [
+  {
+    id: "n1",
+    title: "iPhone 14 Pro - Alpine Blue",
+    price: 999,
+    originalPrice: 999,
+    condition: "new",
+    rating: 5.0,
+    image: "https://images.unsplash.com/photo-1664478546384-d57e49cf5b3e?q=80&w=2070&auto=format&fit=crop",
+    isVerified: true,
+    category: "smartphones"
+  },
+  {
+    id: "n2",
+    title: "MacBook Pro M2 - Silver",
+    price: 1299,
+    originalPrice: 1299,
+    condition: "new",
+    rating: 5.0,
+    image: "https://images.unsplash.com/photo-1569770218135-bea267ed7e84?q=80&w=1480&auto=format&fit=crop",
+    isVerified: true,
+    category: "laptops"
+  },
+  {
+    id: "n3",
+    title: "Sony WH-1000XM5 Headphones",
+    price: 399,
+    originalPrice: 399,
+    condition: "new",
+    rating: 5.0,
+    image: "https://images.unsplash.com/photo-1629367494173-c78a56567877?q=80&w=2127&auto=format&fit=crop",
+    isVerified: true,
+    category: "audio"
+  },
+  {
+    id: "n4",
+    title: "iPad Pro 12.9\" M2 Chip",
+    price: 1099,
+    originalPrice: 1099,
+    condition: "new",
+    rating: 5.0,
+    image: "https://images.unsplash.com/photo-1623126908029-58c31ac7e48e?q=80&w=2070&auto=format&fit=crop",
+    isVerified: true,
+    category: "tablets"
+  }
+];
+
+const FeaturedProducts = () => {
   const navigate = useNavigate();
-  
-  const handleViewAll = () => {
-    navigate('/compare');
-  };
-  
+
   return (
-    <section className="section-container bg-gradient-to-br from-accent/5 to-transparent rounded-3xl py-16">
-      <div className="flex justify-between items-center mb-10">
-        <div>
-          <h2 className="text-2xl md:text-3xl font-bold mb-2">Featured Products</h2>
-          <p className="text-muted-foreground">Discover our top-rated and verified electronics</p>
-        </div>
-        <Button 
-          onClick={handleViewAll}
-          variant="outline" 
-          className="hidden md:flex bg-white hover:bg-accent hover:text-white border-accent/20"
-        >
-          View All Products
-        </Button>
-      </div>
-      
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {featuredProducts.map((product, index) => (
-          <div 
-            key={product.id} 
-            className="animate-fade-in"
-            style={{ animationDelay: `${index * 100}ms` }}
-          >
-            <ProductCard product={product} />
+    <section className="py-16 bg-secondary/5">
+      <div className="container mx-auto px-4">
+        <div className="flex flex-col md:flex-row justify-between items-center mb-10">
+          <div>
+            <h2 className="text-3xl font-bold mb-2">Featured Products</h2>
+            <p className="text-muted-foreground">Discover verified pre-owned electronics at great prices</p>
           </div>
-        ))}
-      </div>
-      
-      <div className="mt-10 text-center md:hidden">
-        <Button 
-          onClick={handleViewAll}
-          variant="outline" 
-          className="bg-white hover:bg-accent hover:text-white border-accent/20"
-        >
-          View All Products
-        </Button>
+          <Link to="/shop">
+            <Button variant="ghost" className="text-accent">
+              View All Products
+              <ArrowRight size={16} className="ml-2" />
+            </Button>
+          </Link>
+        </div>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {featuredProducts.map((product, index) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+
+        <div className="mt-16">
+          <div className="flex flex-col md:flex-row justify-between items-center mb-10">
+            <div>
+              <h2 className="text-3xl font-bold mb-2">New Arrivals</h2>
+              <p className="text-muted-foreground">The latest brand new electronics with full warranty</p>
+            </div>
+            <Link to="/shop?condition=new">
+              <Button variant="ghost" className="text-accent">
+                Explore New Products
+                <ArrowRight size={16} className="ml-2" />
+              </Button>
+            </Link>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {newProducts.map((product, index) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-16 glass rounded-2xl p-8 border border-accent/10 text-center">
+          <h3 className="text-2xl font-bold mb-4">Compare New & Pre-Owned</h3>
+          <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+            See side-by-side comparisons of new vs. pre-owned electronics to make an informed decision based on price, condition, and features.
+          </p>
+          <Button 
+            onClick={() => navigate('/compare')}
+            className="px-8"
+          >
+            Compare Products
+          </Button>
+        </div>
       </div>
     </section>
   );
