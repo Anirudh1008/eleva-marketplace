@@ -1,167 +1,119 @@
 
-import React, { useState } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Heart, Star, ShieldCheck, Zap, IndianRupee } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { toast } from '@/components/ui/use-toast';
-
-export interface Product {
-  id: string;
-  title: string;
-  price: number;
-  originalPrice?: number;
-  condition: 'new' | 'like-new' | 'good' | 'fair';
-  rating: number;
-  image: string;
-  isVerified: boolean;
-  category: string;
-}
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Star, Shield, Info } from 'lucide-react';
+import { Product } from './FeaturedProducts';
 
 interface ProductCardProps {
   product: Product;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const [isFavorite, setIsFavorite] = useState(false);
   const navigate = useNavigate();
-  
-  // Convert USD to INR (83 is the approximate conversion rate)
-  const priceInRupees = Math.round(product.price * 83);
-  const originalPriceInRupees = product.originalPrice ? Math.round(product.originalPrice * 83) : undefined;
   
   const getConditionColor = (condition: string) => {
     switch(condition) {
-      case 'new': return 'bg-green-500/15 text-green-600 border-green-200';
-      case 'like-new': return 'bg-blue-500/15 text-blue-600 border-blue-200';
-      case 'good': return 'bg-yellow-500/15 text-yellow-700 border-yellow-200';
-      case 'fair': return 'bg-orange-500/15 text-orange-700 border-orange-200';
-      default: return 'bg-gray-500/15 text-gray-700 border-gray-200';
+      case 'new': return 'bg-green-500';
+      case 'like-new': return 'bg-blue-500';
+      case 'good': return 'bg-yellow-500';
+      case 'fair': return 'bg-orange-500';
+      default: return 'bg-gray-500';
+    }
+  };
+  
+  const getConditionText = (condition: string) => {
+    switch(condition) {
+      case 'new': return 'New';
+      case 'like-new': return 'Like New';
+      case 'good': return 'Good';
+      case 'fair': return 'Fair';
+      default: return condition;
     }
   };
   
   const getDiscountPercentage = () => {
-    if (!product.originalPrice) return null;
-    const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
-    return discount > 0 ? discount : null;
-  };
-  
-  const handleViewDetails = () => {
-    navigate(`/product/${product.id}`, { state: { product } });
-  };
-
-  const handleToggleFavorite = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsFavorite(!isFavorite);
-    
-    if (!isFavorite) {
-      toast({
-        title: "Added to Wishlist",
-        description: `${product.title} has been added to your wishlist.`,
-      });
-    } else {
-      toast({
-        title: "Removed from Wishlist",
-        description: `${product.title} has been removed from your wishlist.`,
-      });
+    if (product.originalPrice > product.price) {
+      return Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
     }
+    return 0;
   };
   
-  const discount = getDiscountPercentage();
-
+  const handleCardClick = () => {
+    // Save product data to localStorage to access it on the product detail page
+    try {
+      localStorage.setItem('currentProductDetail', JSON.stringify(product));
+    } catch (error) {
+      console.error('Error saving product to localStorage:', error);
+    }
+    
+    // Navigate to the product detail page with the product ID
+    navigate(`/product/${product.id}`);
+  };
+  
+  const discountPercentage = getDiscountPercentage();
+  
   return (
-    <div 
-      className="group relative rounded-2xl overflow-hidden glass transition-all duration-500 card-hover border border-accent/10"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+    <Card 
+      className="overflow-hidden transition-all duration-300 hover:shadow-xl cursor-pointer border border-accent/10 glass"
+      onClick={handleCardClick}
     >
-      <div className="aspect-square overflow-hidden relative">
+      <div className="relative pt-[56.25%] bg-secondary/20">
         <img 
-          src={product.image || '/placeholder.svg'} 
+          src={product.image} 
           alt={product.title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+          className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-      </div>
-      
-      <button 
-        className={`absolute top-3 right-3 p-2 rounded-full ${
-          isFavorite ? 'bg-red-500 text-white shadow-lg' : 'glass-dark'
-        } transition-all duration-300 z-10 hover:scale-110`}
-        onClick={handleToggleFavorite}
-      >
-        <Heart size={18} className={isFavorite ? 'fill-white' : ''} />
-      </button>
-      
-      {product.isVerified && (
-        <div className="absolute top-3 left-3 glass-dark py-1.5 px-3 rounded-full flex items-center space-x-1.5 shadow-lg z-10">
-          <ShieldCheck size={15} className="text-accent" />
-          <span className="text-xs font-semibold">AI Verified</span>
-        </div>
-      )}
-      
-      {discount && (
-        <div className="absolute top-14 left-3 bg-accent text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg z-10 flex items-center">
-          <Zap size={12} className="mr-1" />
-          <span>{discount}% OFF</span>
-        </div>
-      )}
-      
-      <div className="p-5">
-        <div className="flex justify-between items-start mb-3">
-          <h3 className="font-medium text-base line-clamp-1 group-hover:text-accent transition-colors">
-            {product.title}
-          </h3>
-        </div>
         
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center">
-            <IndianRupee size={16} className="mr-1" />
-            <span className="font-bold text-lg">{priceInRupees.toLocaleString()}</span>
-            {originalPriceInRupees && (
-              <span className="text-sm text-muted-foreground line-through ml-2">
-                ₹{originalPriceInRupees.toLocaleString()}
-              </span>
-            )}
-          </div>
-          
-          <Badge variant="outline" className={`${getConditionColor(product.condition)} border`}>
-            {product.condition.replace('-', ' ')}
+        {/* Condition badge */}
+        <div className="absolute top-2 left-2">
+          <Badge className={`${getConditionColor(product.condition)} text-white font-medium`}>
+            {getConditionText(product.condition)}
           </Badge>
         </div>
         
-        <div className="flex items-center justify-between">
-          <div className="flex bg-yellow-100 px-2 py-1 rounded-full items-center">
-            <Star size={14} className="fill-yellow-500 text-yellow-500" />
-            <span className="text-sm font-medium text-yellow-700 ml-1">{product.rating.toFixed(1)}</span>
+        {/* Discount badge */}
+        {discountPercentage > 0 && (
+          <div className="absolute top-2 right-2">
+            <Badge className="bg-red-500 text-white font-medium">
+              {discountPercentage}% OFF
+            </Badge>
           </div>
-          
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-xs bg-accent/10 hover:bg-accent/20 text-accent font-medium rounded-full"
-            onClick={handleViewDetails}
-          >
-            Buy Now
-          </Button>
-        </div>
+        )}
+        
+        {/* Verified badge */}
+        {product.isVerified && (
+          <div className="absolute bottom-2 left-2">
+            <Badge className="bg-accent text-white flex items-center space-x-1 shadow-md">
+              <Shield size={12} />
+              <span>AI Verified</span>
+            </Badge>
+          </div>
+        )}
       </div>
       
-      <div className={`
-        absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent
-        flex items-end justify-center pb-8 opacity-0 group-hover:opacity-100
-        transition-opacity duration-300
-      `}>
-        <Button 
-          onClick={handleViewDetails}
-          className="transform -translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-lg"
-        >
-          View Details
-        </Button>
-      </div>
-    </div>
+      <CardContent className="p-4">
+        <h3 className="font-medium text-lg mb-1 truncate">{product.title}</h3>
+        
+        <div className="flex items-center mb-2">
+          <div className="flex items-center text-amber-500 mr-2">
+            <Star size={16} fill="currentColor" />
+            <span className="text-sm ml-1">{product.rating.toFixed(1)}</span>
+          </div>
+          <span className="text-xs text-muted-foreground">{product.category}</span>
+        </div>
+        
+        <div className="flex items-center space-x-2">
+          <span className="font-bold text-lg">${product.price}</span>
+          {product.originalPrice > product.price && (
+            <span className="text-muted-foreground line-through text-sm">
+              ${product.originalPrice}
+            </span>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
