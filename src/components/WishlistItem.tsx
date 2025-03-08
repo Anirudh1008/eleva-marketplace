@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Product } from '@/components/ProductCard';
+import { Product } from '@/components/FeaturedProducts';
 import { Button } from '@/components/ui/button';
 import { Heart, Trash, ShoppingCart, IndianRupee } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';

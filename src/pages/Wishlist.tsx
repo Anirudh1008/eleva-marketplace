@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { Product } from '@/components/ProductCard';
+import { Product } from '@/components/FeaturedProducts';
 import WishlistItem from '@/components/WishlistItem';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
